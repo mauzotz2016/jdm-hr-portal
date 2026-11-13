@@ -1,0 +1,76 @@
+{
+  "projectId": "YOUR_PROJECT_ID",
+  "projectName": "JDM HR Portal",
+  "databases": [
+    {
+      "$id": "hr_portal_db",
+      "name": "HR Portal DB",
+      "enabled": true
+    }
+  ],
+  "collections": [
+    {
+      "$id": "employees",
+      "$permissions": [
+        "create(\"any\")",
+        "read(\"any\")",
+        "update(\"any\")",
+        "delete(\"any\")"
+      ],
+      "databaseId": "hr_portal_db",
+      "name": "Employees",
+      "enabled": true,
+      "documentSecurity": false,
+      "attributes": [
+        { "key": "name", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
+        { "key": "role", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "salary", "type": "integer", "status": "available", "required": true, "array": false },
+        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Active" }
+      ],
+      "indexes": []
+    },
+    {
+      "$id": "leave_requests",
+      "$permissions": [
+        "create(\"any\")",
+        "read(\"any\")",
+        "update(\"any\")",
+        "delete(\"any\")"
+      ],
+      "databaseId": "hr_portal_db",
+      "name": "Leave Requests",
+      "enabled": true,
+      "documentSecurity": false,
+      "attributes": [
+        { "key": "emp", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
+        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "type", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "dates", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Pending" }
+      ],
+      "indexes": []
+    },
+    {
+      "$id": "expense_claims",
+      "$permissions": [
+        "create(\"any\")",
+        "read(\"any\")",
+        "update(\"any\")",
+        "delete(\"any\")"
+      ],
+      "databaseId": "hr_portal_db",
+      "name": "Expense Claims",
+      "enabled": true,
+      "documentSecurity": false,
+      "attributes": [
+        { "key": "emp", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
+        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "desc", "type": "string", "status": "available", "required": true, "array": false, "size": 250 },
+        { "key": "amount", "type": "integer", "status": "available", "required": true, "array": false },
+        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Pending" }
+      ],
+      "indexes": []
+    }
+  ]
+}
