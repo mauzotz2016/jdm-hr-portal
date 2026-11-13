@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JDM Digital Hub | HR & Payroll Portal</title>
+  <!-- Official Appwrite Web SDK -->
+  <script src="https://jsdelivr.net"></script>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --sidebar-bg: #1e293b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 265px;
+      background-color: var(--sidebar-bg);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      padding: 24px;
+      background-color: var(--primary);
+      border-bottom: 1px solid #334155;
+    }
+
+    .brand h2 {
+      font-size: 1.2rem;
+      letter-spacing: 0.4px;
+      color: #ffffff;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .nav-menu {
+      list-style: none;
+      padding: 16px 0;
+      flex: 1;
+    }
+
+    .nav-item {
+      padding: 13px 24px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .nav-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    .nav-item.active {
+      background-color: #334155;
+      color: #ffffff;
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #334155;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      background-color: var(--card);
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .topbar-left h1 {
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .status-pill {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background-color: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .status-pill.live {
+      background-color: var(--success-bg);
+      color: var(--success);
+    }
+
+    .container {
+      padding: 28px 32px;
+      max-width: 1280px;
+      width: 100%;
+    }
+
+    /* KPI Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .stat-card h3 {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-card .sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Sections */
+    .section {
+      display: none;
+      background: var(--card);
+      padding: 24px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .section-header h2 {
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    /* Buttons */
+    .btn {
+      background-color: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background-color: #f8fafc;
+    }
+
+    /* Forms */
+    .form-box {
+      background-color: #f8fafc;
+      padding: 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 22px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--primary);
+    }
+
+    .form-group input, .form-group select {
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.88rem;
+      background-color: #ffffff;
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+
+    th {
+      background-color: #f8fafc;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-approved {
+      background-color: var(--success-bg);
+      color: var(--success);
+    }
+
+    .badge-pending {
+      background-color: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .badge-rejected {
+      background-color: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    /* Modal for Payslip Preview */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      max-width: 520px;
+      width: 100%;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .payslip-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .container { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h2>JDM HR Portal</h2>
+      <span>Workforce & Payroll Suite</span>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-item active" onclick="switchTab('dashboard', this)">Dashboard Overview</li>
+      <li class="nav-item" onclick="switchTab('staff', this)">Staff & E-Onboarding</li>
+      <li class="nav-item" onclick="switchTab('leave', this)">Leave Management</li>
+      <li class="nav-item" onclick="switchTab('expenses', this)">Expense Claims</li>
+      <li class="nav-item" onclick="switchTab('payroll', this)">Payroll & Payslips</li>
+      <li class="nav-item" onclick="switchTab('assets', this)">Assets & Training</li>
+    </ul>
+    <div class="sidebar-footer">
+      Powered by GitHub & Appwrite
+    </div>
+  </aside>
+
+  <!-- Main Workspace -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 id="page-title">Dashboard Overview</h1>
+      </div>
+      <div class="topbar-right">
+        <select id="branch-filter" onchange="renderAll()" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem;">
+          <option value="ALL">All Branches</option>
+          <option value="Indira Gandhi">Indira Gandhi Branch</option>
+          <option value="Makunganya">Makunganya Branch</option>
+          <option value="Chikongola">Chikongola Branch</option>
+        </select>
+        <span id="connection-badge" class="status-pill">Demo Mode (Local Ready)</span>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Top Metrics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Active Employees</h3>
+          <div class="value" id="kpi-staff">0</div>
+          <div class="sub">Across selected branches</div>
+        </div>
+        <div class="stat-card">
+          <h3>Pending Leave</h3>
+          <div class="value" id="kpi-leave">0</div>
+          <div class="sub">Awaiting supervisor action</div>
+        </div>
+        <div class="stat-card">
+          <h3>Pending Expenses</h3>
+          <div class="value" id="kpi-expenses">0</div>
+          <div class="sub">Multi-level claim queue</div>
+        </div>
+        <div class="stat-card">
+          <h3>Monthly Gross Payroll</h3>
+          <div class="value" id="kpi-payroll">TZS 0</div>
