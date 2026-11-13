@@ -12,16 +12,16 @@
   <aside class="sidebar">
     <div class="brand">
       <h2>JDM HR Portal</h2>
-      <span>Workforce & Payroll Suite</span>
+      <span>Workforce, Portals & Payroll</span>
     </div>
     <ul class="nav-menu">
       <li class="nav-item active" onclick="switchTab('dashboard', this)">Dashboard Overview</li>
       <li class="nav-item" onclick="switchTab('staff', this)">Staff & E-Onboarding</li>
+      <li class="nav-item" onclick="switchTab('forms-inbox', this)">Staff Forms & Email Reply</li>
       <li class="nav-item" onclick="switchTab('leave', this)">Leave & Off-Days</li>
-      <li class="nav-item" onclick="switchTab('appointments', this)">HR Appointments</li>
-      <li class="nav-item" onclick="switchTab('expenses', this)">Expense Claims</li>
+      <li class="nav-item" onclick="switchTab('appointments', this)">Appointments</li>
+      <li class="nav-item" onclick="switchTab('portals', this)">External Portals Vault</li>
       <li class="nav-item" onclick="switchTab('payroll', this)">Payroll & Payslips</li>
-      <li class="nav-item" onclick="switchTab('assets', this)">Assets & Training</li>
     </ul>
     <div class="sidebar-footer">
       JDM Digital Hub &bull; GitHub + Appwrite
@@ -45,111 +45,98 @@
     </header>
 
     <div class="container">
-      <!-- 60-Day Contract Renewal Alert Banner -->
-      <div id="contract-alert-banner" class="alert-banner" style="display:none;">
-        <div class="alert-banner-header">
-          <strong>Contract Renewal Reminder (60 Days or Less Remaining)</strong>
-          <button class="btn btn-sm btn-outline" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[1])">Review Staff Contracts</button>
+      <div id="contract-alert-banner" class="alert-banner" style="display: none;">
+        <div>
+          <strong>Contract Renewal Reminder (60-Day Rule):</strong>
+          <span id="contract-alert-text"></span>
         </div>
-        <ul id="contract-alert-list" class="alert-list"></ul>
+        <button class="btn btn-sm" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[1])">Review Contracts</button>
       </div>
 
-      <!-- KPI Cards -->
       <div class="stats-grid">
         <div class="stat-card">
           <h3>Active Employees</h3>
           <div class="value" id="kpi-staff">0</div>
-          <div class="sub">Click any staff to view full form</div>
+          <div class="sub">Click any staff row for full form</div>
         </div>
         <div class="stat-card">
-          <h3>Contracts Expiring (&le;60d)</h3>
+          <h3>Contracts &le; 60 Days</h3>
           <div class="value" id="kpi-contracts" style="color: var(--danger);">0</div>
-          <div class="sub">Requires HR renewal action</div>
+          <div class="sub">Require renewal attention</div>
         </div>
         <div class="stat-card">
-          <h3>Pending Leave & Off-Days</h3>
-          <div class="value" id="kpi-leave">0</div>
-          <div class="sub">Awaiting supervisor approval</div>
+          <h3>Pending Staff Forms</h3>
+          <div class="value" id="kpi-forms">0</div>
+          <div class="sub">Awaiting email feedback</div>
         </div>
         <div class="stat-card">
-          <h3>Upcoming Appointments</h3>
-          <div class="value" id="kpi-appointments">0</div>
-          <div class="sub">Company, HR & Staff meetings</div>
+          <h3>Saved External Portals</h3>
+          <div class="value" id="kpi-portals">0</div>
+          <div class="sub">NSSF, NHIF, TRA & Services</div>
         </div>
       </div>
 
-      <!-- 1. Dashboard -->
       <div id="dashboard" class="section active">
         <div class="section-header">
           <h2>Executive HR & Operations Summary</h2>
-          <button class="btn btn-outline" onclick="exportCSV()">Export Full Staff CSV</button>
+          <div style="display:flex; gap:10px;">
+            <button class="btn" onclick="copyStaffFormLink()">Copy Staff Form Link</button>
+            <button class="btn btn-outline" onclick="exportCSV()">Export Staff CSV</button>
+          </div>
         </div>
         <p class="desc-text">
-          Centralized HR & Payroll workspace. Click any employee name in the Staff directory to open their complete personal dossier, contract countdown, and renewal form.
+          Centralized HR command center. Send the self-service form link to staff, approve requests with instant email feedback, monitor 60-day contract expirations, and launch NSSF/NHIF portals directly inside your workspace.
         </p>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Core Module</th>
-                <th>Workflow & Alert Rule</th>
-                <th>Appwrite Collection</th>
-                <th>Status</th>
+                <th>System Capability</th>
+                <th>Description</th>
+                <th>Quick Action</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Staff Dossier & 60-Day Contract Monitor</strong></td>
-                <td>Auto-alerts HR when contract has &le;60 days left</td>
-                <td><code>employees</code></td>
-                <td><span class="badge badge-approved">Operational</span></td>
+                <td><strong>Staff Self-Service Form & Email Reply</strong></td>
+                <td>Send form link to staff; HR approval sends automatic status email</td>
+                <td><button class="btn btn-outline btn-sm" onclick="switchTab('forms-inbox', document.querySelectorAll('.nav-item')[2])">Open Inbox</button></td>
               </tr>
               <tr>
-                <td><strong>Leave & Off-Days Management</strong></td>
-                <td>Tracks Annual/Sick Leave & Weekly Off-Days</td>
-                <td><code>leave_requests</code></td>
-                <td><span class="badge badge-approved">Operational</span></td>
+                <td><strong>External Portals & Credential Vault</strong></td>
+                <td>Store NSSF, NHIF, TRA links & credentials and open inside portal</td>
+                <td><button class="btn btn-outline btn-sm" onclick="switchTab('portals', document.querySelectorAll('.nav-item')[5])">Open Vault</button></td>
               </tr>
               <tr>
-                <td><strong>HR & Management Appointments</strong></td>
-                <td>Schedules Company-HR & HR-Staff sessions</td>
-                <td><code>appointments</code></td>
-                <td><span class="badge badge-approved">Operational</span></td>
-              </tr>
-              <tr>
-                <td><strong>Expense Claims & Reimbursements</strong></td>
-                <td>Multi-level approval & payout tracking</td>
-                <td><code>expense_claims</code></td>
-                <td><span class="badge badge-approved">Operational</span></td>
-              </tr>
-              <tr>
-                <td><strong>Payroll & Statutory Engine</strong></td>
-                <td>NSSF (10%) & Net Take-Home Payslip Generator</td>
-                <td><code>payroll_runs</code></td>
-                <td><span class="badge badge-approved">Ready</span></td>
+                <td><strong>Full Employee Dossier & 60-Day Alerts</strong></td>
+                <td>Click any employee row to open complete HR record & contract timer</td>
+                <td><button class="btn btn-outline btn-sm" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[1])">View Staff</button></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- 2. Staff & E-Onboarding -->
       <div id="staff" class="section">
         <div class="section-header">
-          <h2>Staff Directory, Full Profiles & Contract Monitor</h2>
+          <h2>Staff Directory & Contract Monitor (Click Row for Full Form)</h2>
         </div>
         <div class="form-box">
           <div class="form-grid">
             <div class="form-group">
-              <label>Full Name *</label>
+              <label>Full Name</label>
               <input type="text" id="emp-name" placeholder="e.g. Neema Mwakalinga" />
             </div>
             <div class="form-group">
-              <label>Job Title / Role *</label>
-              <input type="text" id="emp-role" placeholder="e.g. Front Desk Supervisor" />
+              <label>Email Address</label>
+              <input type="email" id="emp-email" placeholder="neema@company.co.tz" />
             </div>
             <div class="form-group">
-              <label>Branch *</label>
+              <label>Job Title</label>
+              <input type="text" id="emp-role" placeholder="Front Desk Supervisor" />
+            </div>
+            <div class="form-group">
+              <label>Branch</label>
               <select id="emp-branch">
                 <option value="Indira Gandhi">Indira Gandhi</option>
                 <option value="Makunganya">Makunganya</option>
@@ -157,35 +144,15 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Phone Number *</label>
-              <input type="text" id="emp-phone" placeholder="e.g. +255 712 345 678" />
+              <label>Contract End Date</label>
+              <input type="date" id="emp-contract-end" />
             </div>
             <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="emp-email" placeholder="staff@company.co.tz" />
-            </div>
-            <div class="form-group">
-              <label>NIDA / National ID</label>
-              <input type="text" id="emp-nida" placeholder="19950412-12345-00001-20" />
-            </div>
-            <div class="form-group">
-              <label>Emergency Contact</label>
-              <input type="text" id="emp-emergency" placeholder="Name & Phone" />
-            </div>
-            <div class="form-group">
-              <label>Contract Start Date *</label>
-              <input type="date" id="emp-start" />
-            </div>
-            <div class="form-group">
-              <label>Contract End Date *</label>
-              <input type="date" id="emp-end" />
-            </div>
-            <div class="form-group">
-              <label>Basic Salary (TZS) *</label>
+              <label>Basic Salary (TZS)</label>
               <input type="number" id="emp-salary" placeholder="850000" />
             </div>
             <div class="form-group">
-              <button class="btn" onclick="handleAddEmployee()">+ Register Full Staff Profile</button>
+              <button class="btn" onclick="handleAddEmployee()">+ Onboard Staff</button>
             </div>
           </div>
         </div>
@@ -193,12 +160,11 @@
           <table>
             <thead>
               <tr>
-                <th>Employee Name (Click for Form)</th>
+                <th>Employee Name</th>
                 <th>Role & Branch</th>
-                <th>Contract End</th>
+                <th>Contract Expiry</th>
                 <th>Days Left</th>
-                <th>Basic Salary</th>
-                <th>Action</th>
+                <th>Dossier</th>
               </tr>
             </thead>
             <tbody id="staff-tbody"></tbody>
@@ -206,38 +172,58 @@
         </div>
       </div>
 
-      <!-- 3. Leave & Off-Days Management -->
+      <div id="forms-inbox" class="section">
+        <div class="section-header">
+          <h2>Staff Submitted Forms & Automated Email Response</h2>
+          <div style="display:flex; gap:10px;">
+            <a href="staff-form.html" target="_blank" class="btn btn-outline btn-sm">Preview Staff Form</a>
+            <button class="btn btn-sm" onclick="copyStaffFormLink()">Copy Link to Send Staff</button>
+          </div>
+        </div>
+        <p class="desc-text">
+          When you click <strong>Approve & Email</strong>, <strong>Hold</strong>, or <strong>Reject & Email</strong>, the portal updates the request and dispatches an automated email response directly to the employee.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Staff Name & Email</th>
+                <th>Request Type</th>
+                <th>Details / Dates</th>
+                <th>Status</th>
+                <th>HR Decision & Auto-Email</th>
+              </tr>
+            </thead>
+            <tbody id="forms-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <div id="leave" class="section">
         <div class="section-header">
-          <h2>Leave & Off-Day Requests</h2>
+          <h2>Leave & Weekly Off-Day Tracker</h2>
         </div>
         <div class="form-box">
           <div class="form-grid">
             <div class="form-group">
-              <label>Employee Name *</label>
-              <input type="text" id="leave-emp" placeholder="Enter staff name" />
+              <label>Employee Name</label>
+              <input type="text" id="leave-emp" placeholder="Staff Name" />
             </div>
             <div class="form-group">
-              <label>Request Category *</label>
+              <label>Category</label>
               <select id="leave-type">
                 <option value="Weekly Off-Day">Weekly Off-Day</option>
                 <option value="Compensatory Off-Day">Compensatory Off-Day</option>
                 <option value="Annual Leave">Annual Leave</option>
                 <option value="Sick Leave">Sick Leave</option>
-                <option value="Maternity / Paternity">Maternity / Paternity</option>
-                <option value="Emergency Leave">Emergency Leave</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Date / Date Range *</label>
-              <input type="text" id="leave-dates" placeholder="e.g. Nov 18, 2026 or Nov 20-24" />
+              <label>Dates</label>
+              <input type="text" id="leave-dates" placeholder="e.g. Nov 18, 2026" />
             </div>
             <div class="form-group">
-              <label>Reason / Relief Notes</label>
-              <input type="text" id="leave-notes" placeholder="Optional handover details" />
-            </div>
-            <div class="form-group">
-              <button class="btn" onclick="handleAddLeave()">+ Submit Leave / Off-Day</button>
+              <button class="btn" onclick="handleAddLeave()">+ Log Leave / Off-Day</button>
             </div>
           </div>
         </div>
@@ -249,7 +235,6 @@
                 <th>Branch</th>
                 <th>Category</th>
                 <th>Dates</th>
-                <th>Notes</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -259,36 +244,33 @@
         </div>
       </div>
 
-      <!-- 4. HR & Management Appointments -->
       <div id="appointments" class="section">
         <div class="section-header">
-          <h2>Appointments & Meetings (Company &harr; HR &harr; Staff)</h2>
+          <h2>Official Appointments (Management &bull; HR &bull; Staff)</h2>
         </div>
         <div class="form-box">
           <div class="form-grid">
             <div class="form-group">
-              <label>Meeting Type *</label>
+              <label>Meeting Type</label>
               <select id="appt-type">
-                <option value="HR & Staff Meeting">HR &amp; Staff (1-on-1 / Disciplinary / Appraisal)</option>
-                <option value="Company Management & HR">Company Management &amp; HR (Strategy / Policy)</option>
-                <option value="Contract Renewal Review">Contract Renewal Review</option>
-                <option value="Onboarding Interview">Onboarding / Recruitment Session</option>
+                <option value="Company Management & HR">Company Management & HR</option>
+                <option value="HR & Staff">HR & Staff</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Participant / Staff Name *</label>
-              <input type="text" id="appt-participant" placeholder="e.g. David Mwakalinga or Managing Director" />
+              <label>Participant / Staff Name</label>
+              <input type="text" id="appt-person" placeholder="e.g. Managing Director / Amina" />
             </div>
             <div class="form-group">
-              <label>Date & Time *</label>
-              <input type="text" id="appt-datetime" placeholder="e.g. Nov 16, 2026 at 10:30 AM" />
+              <label>Subject / Agenda</label>
+              <input type="text" id="appt-subject" placeholder="Contract Renewal Review" />
             </div>
             <div class="form-group">
-              <label>Agenda / Topic *</label>
-              <input type="text" id="appt-agenda" placeholder="e.g. 60-Day Contract Renewal Discussion" />
+              <label>Date & Time</label>
+              <input type="datetime-local" id="appt-datetime" />
             </div>
             <div class="form-group">
-              <button class="btn" onclick="handleAddAppointment()">+ Book Appointment</button>
+              <button class="btn" onclick="handleAddAppointment()">+ Schedule Appointment</button>
             </div>
           </div>
         </div>
@@ -296,62 +278,72 @@
           <table>
             <thead>
               <tr>
-                <th>Meeting Type</th>
+                <th>Type</th>
                 <th>Participant</th>
-                <th>Branch</th>
+                <th>Subject</th>
                 <th>Date & Time</th>
-                <th>Agenda</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id="appointments-tbody"></tbody>
+            <tbody id="appt-tbody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- 5. Expense Claims -->
-      <div id="expenses" class="section">
+      <div id="portals" class="section">
         <div class="section-header">
-          <h2>Expense Claims & Reimbursements</h2>
+          <h2>External Portals & Credential Vault (NSSF, NHIF, TRA & More)</h2>
         </div>
+        <p class="desc-text">
+          Save your frequently used portals and login credentials. Click <strong>Open Inside Portal</strong> to work directly inside the embedded window below, or copy credentials with one click.
+        </p>
         <div class="form-box">
           <div class="form-grid">
             <div class="form-group">
-              <label>Employee Name</label>
-              <input type="text" id="exp-emp" placeholder="Enter staff name" />
+              <label>Portal Name</label>
+              <input type="text" id="portal-name" placeholder="e.g. NSSF Employer Portal" />
             </div>
             <div class="form-group">
-              <label>Expense Description</label>
-              <input type="text" id="exp-desc" placeholder="e.g. Guest Transfer / Supplies" />
+              <label>Portal URL (with https://)</label>
+              <input type="url" id="portal-url" placeholder="https://portal.nssf.go.tz" />
             </div>
             <div class="form-group">
-              <label>Amount (TZS)</label>
-              <input type="number" id="exp-amt" placeholder="45000" />
+              <label>Username / Employer ID</label>
+              <input type="text" id="portal-user" placeholder="admin@jdmhub.co.tz" />
             </div>
             <div class="form-group">
-              <button class="btn" onclick="handleAddExpense()">+ Submit Claim</button>
+              <label>Password / PIN</label>
+              <input type="password" id="portal-pass" placeholder="Enter portal password" />
+            </div>
+            <div class="form-group">
+              <button class="btn" onclick="handleAddPortal()">+ Save Portal</button>
             </div>
           </div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Branch</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="expense-tbody"></tbody>
-          </table>
+
+        <div id="portals-grid" class="portals-grid"></div>
+
+        <div id="embedded-workspace" class="embedded-box" style="display: none;">
+          <div class="embedded-header">
+            <div>
+              <strong id="active-portal-title">Portal Workspace</strong>
+              <span id="active-portal-creds" style="margin-left: 12px; font-size: 0.82rem; color: var(--muted);"></span>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-outline btn-sm" id="copy-user-btn">Copy Username</button>
+              <button class="btn btn-outline btn-sm" id="copy-pass-btn">Copy Password</button>
+              <a id="external-fallback-link" href="#" target="_blank" class="btn btn-sm">Open Full Tab</a>
+              <button class="btn btn-outline btn-sm" onclick="closeEmbeddedPortal()">Close Window</button>
+            </div>
+          </div>
+          <div class="iframe-notice">
+            Note: If a government portal (such as NSSF or NHIF) restricts frame embedding for security, click <strong>Open Full Tab</strong> above while keeping your credentials copied.
+          </div>
+          <iframe id="portal-iframe" src="" title="External Portal Workspace"></iframe>
         </div>
       </div>
 
-      <!-- 6. Payroll & Payslips -->
       <div id="payroll" class="section">
         <div class="section-header">
           <h2>Monthly Payroll & Instant Payslip Generator</h2>
@@ -374,64 +366,19 @@
         </div>
       </div>
 
-      <!-- 7. Assets & Training -->
-      <div id="assets" class="section">
-        <div class="section-header">
-          <h2>Company Asset Register & Staff Training</h2>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Tag / Program</th>
-                <th>Item / Course Title</th>
-                <th>Assigned To</th>
-                <th>Branch</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>AST-001</code></td>
-                <td>Reception POS Terminal & Scanner</td>
-                <td>Front Office Team</td>
-                <td>Indira Gandhi</td>
-                <td><span class="badge badge-approved">Active</span></td>
-              </tr>
-              <tr>
-                <td><code>AST-002</code></td>
-                <td>Manager Laptop (Dell Latitude)</td>
-                <td>Branch Operations</td>
-                <td>Makunganya</td>
-                <td><span class="badge badge-approved">Active</span></td>
-              </tr>
-              <tr>
-                <td><code>TRN-104</code></td>
-                <td>Computer Speed & Keyboard Efficiency Workshop</td>
-                <td>Administrative Staff</td>
-                <td>All Branches</td>
-                <td><span class="badge badge-pending">In Progress</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- Full Staff Dossier & Contract Renewal Modal -->
-  <div id="staff-modal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-    <div class="modal-box modal-lg">
+  <div id="employee-modal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+    <div class="modal-box" style="max-width: 640px;">
       <div class="modal-header">
-        <h3>Complete Employee Dossier &amp; Contract Form</h3>
-        <button class="btn btn-outline btn-sm" onclick="document.getElementById('staff-modal').style.display='none'">Close</button>
+        <h3>Complete Employee Record & Contract Form</h3>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('employee-modal').style.display='none'">Close</button>
       </div>
-      <div id="staff-dossier-content"></div>
+      <div id="employee-dossier-content"></div>
     </div>
   </div>
 
-  <!-- Payslip Modal -->
   <div id="payslip-modal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
     <div class="modal-box">
       <div class="modal-header">

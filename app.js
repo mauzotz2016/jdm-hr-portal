@@ -6,7 +6,8 @@ const APPWRITE_CONFIG = {
     employees: 'employees',
     leaves: 'leave_requests',
     appointments: 'appointments',
-    expenses: 'expense_claims'
+    staffForms: 'staff_forms',
+    portals: 'external_portals'
   }
 };
 
@@ -25,99 +26,119 @@ if (isLiveAppwrite) {
   badge.classList.add('live');
 }
 
-// Helper to create future date strings relative to today so 60-day demo alerts work dynamically
-function getFutureDateString(daysFromNow) {
-  const d = new Date();
-  d.setDate(d.getDate() + daysFromNow);
-  return d.toISOString().split('T')[0];
+function getDaysRemaining(endDateStr) {
+  if (!endDateStr) return 999;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const end = new Date(endDateStr);
+  return Math.ceil((end - today) / (1000 * 60 * 60 * 24));
 }
 
 let state = {
   employees: [
     {
-      $id: '1',
+      $id: 'emp1',
       name: 'Amina Hassan',
+      email: 'amina.hassan@company.co.tz',
+      phone: '+255 712 345 678',
+      nida: '19920412-14102-00001-22',
       role: 'Branch Manager',
       branch: 'Indira Gandhi',
-      phone: '+255 713 440 112',
-      email: 'amina.hassan@jdmhub.co.tz',
-      nida: '19910815-14102-00024-19',
-      emergency: 'Salim Hassan (+255 754 221 900)',
-      contractStart: '2025-12-20',
-      contractEnd: getFutureDateString(38), // 38 days left -> triggers 60-day alert!
+      contractStart: '2025-01-01',
+      contractEnd: '2026-12-25',
       salary: 1450000,
-      leaveBalance: 16,
+      leaveBalance: 14,
+      emergencyContact: 'Salim Hassan (+255 754 111 222)',
       status: 'Active'
     },
     {
-      $id: '2',
+      $id: 'emp2',
       name: 'David Mwakalinga',
+      email: 'david.m@company.co.tz',
+      phone: '+255 765 987 654',
+      nida: '19950819-11204-00004-19',
       role: 'Front Office Lead',
       branch: 'Makunganya',
-      phone: '+255 765 890 331',
-      email: 'david.m@jdmhub.co.tz',
-      nida: '19940322-11205-00089-21',
-      emergency: 'Esther Mwakalinga (+255 715 998 110)',
-      contractStart: '2026-01-05',
-      contractEnd: getFutureDateString(54), // 54 days left -> triggers 60-day alert!
+      contractStart: '2025-06-01',
+      contractEnd: '2027-06-01',
       salary: 850000,
-      leaveBalance: 14,
+      leaveBalance: 18,
+      emergencyContact: 'Mary Mwakalinga (+255 713 444 555)',
       status: 'Active'
     },
     {
-      $id: '3',
-      name: 'Grace Kimaro',
-      role: 'Accounts & Payroll Officer',
-      branch: 'Indira Gandhi',
-      phone: '+255 688 512 774',
-      email: 'grace.kimaro@jdmhub.co.tz',
-      nida: '19931110-15101-00043-18',
-      emergency: 'Peter Kimaro (+255 784 300 412)',
-      contractStart: '2026-05-01',
-      contractEnd: getFutureDateString(170),
-      salary: 1100000,
-      leaveBalance: 21,
-      status: 'Active'
-    },
-    {
-      $id: '4',
+      $id: 'emp3',
       name: 'Baraka Juma',
+      email: 'baraka.j@company.co.tz',
+      phone: '+255 655 222 333',
+      nida: '19941102-15109-00009-14',
       role: 'Operations Supervisor',
       branch: 'Chikongola',
-      phone: '+255 719 604 882',
-      email: 'baraka.juma@jdmhub.co.tz',
-      nida: '19960214-12104-00017-22',
-      emergency: 'Halima Juma (+255 655 118 209)',
-      contractStart: '2026-06-15',
-      contractEnd: getFutureDateString(215),
+      contractStart: '2025-01-10',
+      contractEnd: '2027-01-05',
       salary: 900000,
-      leaveBalance: 18,
+      leaveBalance: 12,
+      emergencyContact: 'Juma Selemani (+255 784 999 000)',
       status: 'Active'
     }
   ],
+  staffForms: JSON.parse(localStorage.getItem('jdm_staff_forms') || 'null') || [
+    {
+      $id: 'sf1',
+      name: 'David Mwakalinga',
+      email: 'david.m@company.co.tz',
+      branch: 'Makunganya',
+      type: 'Weekly Off-Day',
+      dates: 'Nov 19, 2026',
+      notes: 'Requesting Thursday off after weekend shift coverage.',
+      status: 'Pending'
+    }
+  ],
   leaves: [
-    { $id: 'l1', emp: 'David Mwakalinga', branch: 'Makunganya', type: 'Weekly Off-Day', dates: 'Nov 15, 2026', notes: 'Covered by Front Desk team', status: 'Pending' },
-    { $id: 'l2', emp: 'Amina Hassan', branch: 'Indira Gandhi', type: 'Annual Leave', dates: 'Nov 24 - Nov 28, 2026', notes: 'Handover to Accounts Lead', status: 'Pending' }
+    { $id: 'l1', emp: 'Amina Hassan', branch: 'Indira Gandhi', type: 'Annual Leave', dates: 'Dec 01 - Dec 05, 2026', status: 'Approved' }
   ],
   appointments: [
-    { $id: 'a1', type: 'Contract Renewal Review', participant: 'Amina Hassan', branch: 'Indira Gandhi', datetime: 'Nov 17, 2026 at 10:00 AM', agenda: '60-Day Contract Extension & KPI Review', status: 'Scheduled' },
-    { $id: 'a2', type: 'Company Management & HR', participant: 'Managing Director & HR Lead', branch: 'Indira Gandhi', datetime: 'Nov 19, 2026 at 02:30 PM', agenda: 'Q4 Staffing Budget & Branch Off-Day Policy', status: 'Scheduled' }
+    {
+      $id: 'ap1',
+      type: 'Company Management & HR',
+      person: 'Managing Director',
+      subject: 'Q4 Staffing & Branch Payroll Review',
+      datetime: '2026-11-16T10:00',
+      status: 'Scheduled'
+    },
+    {
+      $id: 'ap2',
+      type: 'HR & Staff',
+      person: 'Amina Hassan',
+      subject: '60-Day Contract Renewal Discussion',
+      datetime: '2026-11-18T14:30',
+      status: 'Scheduled'
+    }
   ],
-  expenses: [
-    { $id: 'e1', emp: 'Baraka Juma', branch: 'Chikongola', desc: 'Guest Transfer & Fuel', amount: 65000, status: 'Pending' },
-    { $id: 'e2', emp: 'Grace Kimaro', branch: 'Indira Gandhi', desc: 'Stationery & Printer Toner', amount: 140000, status: 'Approved' }
+  portals: JSON.parse(localStorage.getItem('jdm_external_portals') || 'null') || [
+    {
+      $id: 'p1',
+      name: 'NSSF Employer Portal',
+      url: 'https://portal.nssf.go.tz',
+      username: 'hr@jdmhub.co.tz',
+      password: 'NSSF_Password_2026'
+    },
+    {
+      $id: 'p2',
+      name: 'NHIF Employer Self-Service',
+      url: 'https://eservices.nhif.or.tz',
+      username: 'jdm_employer_01',
+      password: 'NHIF_Password_2026'
+    },
+    {
+      $id: 'p3',
+      name: 'TRA Taxpayer Portal',
+      url: 'https://taxpayerportal.tra.go.tz',
+      username: '104-882-910',
+      password: 'TRA_Password_2026'
+    }
   ]
 };
-
-function calculateDaysRemaining(endDateStr) {
-  if (!endDateStr) return 999;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const end = new Date(endDateStr);
-  end.setHours(0, 0, 0, 0);
-  const diffTime = end - today;
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
 
 function switchTab(sectionId, navEl) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -135,16 +156,18 @@ async function syncFromAppwrite() {
     return;
   }
   try {
-    const [empRes, leaveRes, apptRes, expRes] = await Promise.all([
+    const [empRes, leaveRes, apptRes, formsRes, portalsRes] = await Promise.all([
       databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.employees),
       databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.leaves),
       databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.appointments),
-      databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.expenses)
+      databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.staffForms),
+      databases.listDocuments(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.portals)
     ]);
     state.employees = empRes.documents;
     state.leaves = leaveRes.documents;
     state.appointments = apptRes.documents;
-    state.expenses = expRes.documents;
+    state.staffForms = formsRes.documents;
+    state.portals = portalsRes.documents;
     renderAll();
   } catch (err) {
     console.error('Appwrite Sync Error:', err);
@@ -157,110 +180,105 @@ function renderAll() {
   const filterByBranch = (item) => selectedBranch === 'ALL' || item.branch === selectedBranch;
 
   const filteredStaff = state.employees.filter(filterByBranch);
+  const filteredForms = state.staffForms.filter(filterByBranch);
   const filteredLeaves = state.leaves.filter(filterByBranch);
-  const filteredAppts = state.appointments.filter(filterByBranch);
-  const filteredExpenses = state.expenses.filter(filterByBranch);
 
-  // Check 60-Day Contract Alerts
-  const expiringStaff = filteredStaff.filter(emp => calculateDaysRemaining(emp.contractEnd) <= 60);
+  const expiringSoon = filteredStaff.filter(emp => getDaysRemaining(emp.contractEnd) <= 60);
   const banner = document.getElementById('contract-alert-banner');
-  const alertList = document.getElementById('contract-alert-list');
-
-  if (expiringStaff.length > 0) {
-    banner.style.display = 'block';
-    alertList.innerHTML = expiringStaff.map(emp => {
-      const days = calculateDaysRemaining(emp.contractEnd);
-      const label = days < 0 ? `EXPIRED (${Math.abs(days)} days ago)` : `${days} days remaining (Ends ${emp.contractEnd})`;
-      return `<li><strong>${emp.name}</strong> (${emp.role} - ${emp.branch}): <strong>${label}</strong> &mdash; <span class="staff-link" onclick="openStaffDossier('${emp.$id}')">Open Form &amp; Renew Contract</span></li>`;
-    }).join('');
+  if (expiringSoon.length > 0) {
+    banner.style.display = 'flex';
+    const names = expiringSoon.map(e => `${e.name} (${getDaysRemaining(e.contractEnd)} days left)`).join(', ');
+    document.getElementById('contract-alert-text').innerText = ` ${expiringSoon.length} staff contract(s) need renewal soon: ${names}.`;
   } else {
     banner.style.display = 'none';
   }
 
-  // Update KPIs
   document.getElementById('kpi-staff').innerText = filteredStaff.length;
-  document.getElementById('kpi-contracts').innerText = expiringStaff.length;
-  document.getElementById('kpi-leave').innerText = filteredLeaves.filter(l => l.status === 'Pending').length;
-  document.getElementById('kpi-appointments').innerText = filteredAppts.filter(a => a.status === 'Scheduled').length;
+  document.getElementById('kpi-contracts').innerText = expiringSoon.length;
+  document.getElementById('kpi-forms').innerText = filteredForms.filter(f => f.status === 'Pending').length;
+  document.getElementById('kpi-portals').innerText = state.portals.length;
 
-  // Render Staff Table
   document.getElementById('staff-tbody').innerHTML = filteredStaff.map(emp => {
-    const days = calculateDaysRemaining(emp.contractEnd);
-    let badgeClass = 'badge-approved';
-    let daysText = `${days} days left`;
-    if (days < 0) {
-      badgeClass = 'badge-danger';
-      daysText = 'Expired';
-    } else if (days <= 60) {
-      badgeClass = 'badge-danger';
-      daysText = `${days} days (Renew!)`;
-    }
-
+    const daysLeft = getDaysRemaining(emp.contractEnd);
+    const badgeClass = daysLeft <= 60 ? 'badge-danger' : 'badge-approved';
     return `
-      <tr>
-        <td><span class="staff-link" onclick="openStaffDossier('${emp.$id}')">${emp.name}</span></td>
-        <td>${emp.role} &bull; <small>${emp.branch}</small></td>
-        <td>${emp.contractEnd || 'N/A'}</td>
-        <td><span class="badge ${badgeClass}">${daysText}</span></td>
-        <td>TZS ${Number(emp.salary).toLocaleString()}</td>
-        <td><button class="btn btn-outline btn-sm" onclick="openStaffDossier('${emp.$id}')">Full Form</button></td>
+      <tr class="clickable-row" onclick="openEmployeeDossier('${emp.$id}')">
+        <td><strong>${emp.name}</strong><br><span style="font-size:0.78rem; color:var(--muted);">${emp.email || ''}</span></td>
+        <td>${emp.role}<br><span style="font-size:0.78rem; color:var(--muted);">${emp.branch}</span></td>
+        <td>${emp.contractEnd || 'Permanent'}</td>
+        <td><span class="badge ${badgeClass}">${daysLeft === 999 ? 'N/A' : daysLeft + ' Days'}</span></td>
+        <td><button class="btn btn-outline btn-sm">Open Full Form</button></td>
       </tr>
     `;
   }).join('');
 
-  // Render Leave & Off-Days Table
+  document.getElementById('forms-tbody').innerHTML = filteredForms.map(f => {
+    let badgeClass = 'badge-pending';
+    if (f.status === 'Approved') badgeClass = 'badge-approved';
+    if (f.status === 'Rejected') badgeClass = 'badge-danger';
+
+    return `
+      <tr>
+        <td><strong>${f.name}</strong><br><span style="font-size:0.78rem; color:var(--muted);">${f.email}</span></td>
+        <td>${f.type}<br><span style="font-size:0.75rem; color:var(--muted);">${f.branch}</span></td>
+        <td><strong>${f.dates}</strong><br><span style="font-size:0.78rem; color:var(--muted);">${f.notes || ''}</span></td>
+        <td><span class="badge ${badgeClass}">${f.status}</span></td>
+        <td style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-success btn-sm" onclick="respondToStaffForm('${f.$id}', 'Approved')">Approve & Email</button>
+          <button class="btn btn-outline btn-sm" onclick="respondToStaffForm('${f.$id}', 'Pending')">Hold</button>
+          <button class="btn btn-danger btn-sm" onclick="respondToStaffForm('${f.$id}', 'Rejected')">Reject & Email</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
   document.getElementById('leave-tbody').innerHTML = filteredLeaves.map(l => `
     <tr>
       <td><strong>${l.emp}</strong></td>
       <td>${l.branch}</td>
-      <td><span class="badge ${l.type.includes('Off-Day') ? 'badge-pending' : 'badge-approved'}">${l.type}</span></td>
+      <td>${l.type}</td>
       <td>${l.dates}</td>
-      <td>${l.notes || '-'}</td>
       <td><span class="badge ${l.status === 'Approved' ? 'badge-approved' : 'badge-pending'}">${l.status}</span></td>
       <td>
-        ${l.status === 'Pending' 
-          ? `<button class="btn btn-sm" onclick="approveItem('leaves', '${l.$id}', 'Approved')">Approve</button>` 
+        ${l.status === 'Pending'
+          ? `<button class="btn btn-sm" onclick="approveLeave('${l.$id}')">Approve</button>`
           : '<span style="color:var(--muted); font-size:0.8rem;">Approved</span>'}
       </td>
     </tr>
   `).join('');
 
-  // Render Appointments Table
-  document.getElementById('appointments-tbody').innerHTML = filteredAppts.map(a => `
+  document.getElementById('appt-tbody').innerHTML = state.appointments.map(a => `
     <tr>
       <td><strong>${a.type}</strong></td>
-      <td>${a.participant}</td>
-      <td>${a.branch}</td>
-      <td>${a.datetime}</td>
-      <td>${a.agenda}</td>
+      <td>${a.person}</td>
+      <td>${a.subject}</td>
+      <td>${a.datetime.replace('T', ' ')}</td>
       <td><span class="badge ${a.status === 'Completed' ? 'badge-approved' : 'badge-pending'}">${a.status}</span></td>
       <td>
-        ${a.status === 'Scheduled' 
-          ? `<button class="btn btn-sm" onclick="approveItem('appointments', '${a.$id}', 'Completed')">Mark Done</button>` 
-          : '<span style="color:var(--muted); font-size:0.8rem;">Completed</span>'}
+        ${a.status !== 'Completed'
+          ? `<button class="btn btn-sm" onclick="completeAppointment('${a.$id}')">Mark Done</button>`
+          : 'Done'}
       </td>
     </tr>
   `).join('');
 
-  // Render Expense Table
-  document.getElementById('expense-tbody').innerHTML = filteredExpenses.map(e => `
-    <tr>
-      <td><strong>${e.emp}</strong></td>
-      <td>${e.branch}</td>
-      <td>${e.desc}</td>
-      <td>TZS ${Number(e.amount).toLocaleString()}</td>
-      <td><span class="badge ${e.status === 'Approved' ? 'badge-approved' : 'badge-pending'}">${e.status}</span></td>
-      <td>
-        ${e.status === 'Pending' 
-          ? `<button class="btn btn-sm" onclick="approveItem('expenses', '${e.$id}', 'Approved')">Approve</button>` 
-          : '<span style="color:var(--muted); font-size:0.8rem;">Resolved</span>'}
-      </td>
-    </tr>
+  document.getElementById('portals-grid').innerHTML = state.portals.map(p => `
+    <div class="portal-card">
+      <div>
+        <h4>${p.name}</h4>
+        <p>${p.url}</p>
+        <p style="margin-top:6px; color:var(--primary);">User: <strong>${p.username}</strong></p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-sm" onclick="launchEmbeddedPortal('${p.$id}')">Open Inside Portal</button>
+        <button class="btn btn-outline btn-sm" onclick="copyText('${p.username}', 'Username')">Copy User</button>
+        <button class="btn btn-outline btn-sm" onclick="copyText('${p.password}', 'Password')">Copy Pass</button>
+      </div>
+    </div>
   `).join('');
 
-  // Render Payroll Table
   document.getElementById('payroll-tbody').innerHTML = filteredStaff.map(emp => {
-    const gross = Number(emp.salary);
+    const gross = Number(emp.salary || 0);
     const nssf = Math.round(gross * 0.10);
     const net = gross - nssf;
     return `
@@ -276,189 +294,214 @@ function renderAll() {
   }).join('');
 }
 
-// Open Complete Staff Dossier & Contract Renewal Modal
-function openStaffDossier(empId) {
+function openEmployeeDossier(empId) {
   const emp = state.employees.find(e => e.$id === empId);
   if (!emp) return;
+  const daysLeft = getDaysRemaining(emp.contractEnd);
 
-  const days = calculateDaysRemaining(emp.contractEnd);
-  const alertHtml = days <= 60
-    ? `<div class="alert-banner" style="margin-bottom:16px;"><strong>HR Action Needed:</strong> Only <strong>${days} days</strong> remaining on this contract. Use the renewal date picker below to extend the contract.</div>`
-    : '';
-
-  document.getElementById('staff-dossier-content').innerHTML = `
-    ${alertHtml}
-    <div class="dossier-grid">
-      <div class="dossier-field"><small>Full Legal Name</small><strong>${emp.name}</strong></div>
-      <div class="dossier-field"><small>Job Title / Role</small><strong>${emp.role}</strong></div>
-      <div class="dossier-field"><small>Assigned Branch</small><strong>${emp.branch}</strong></div>
-      <div class="dossier-field"><small>Phone Number</small><strong>${emp.phone || 'Not Provided'}</strong></div>
-      <div class="dossier-field"><small>Email Address</small><strong>${emp.email || 'Not Provided'}</strong></div>
-      <div class="dossier-field"><small>NIDA / National ID</small><strong>${emp.nida || 'Pending Verification'}</strong></div>
-      <div class="dossier-field"><small>Emergency Contact</small><strong>${emp.emergency || 'Not Provided'}</strong></div>
-      <div class="dossier-field"><small>Basic Gross Salary</small><strong>TZS ${Number(emp.salary).toLocaleString()} / Month</strong></div>
-      <div class="dossier-field"><small>Contract Start Date</small><strong>${emp.contractStart || 'N/A'}</strong></div>
-      <div class="dossier-field"><small>Contract End Date</small><strong>${emp.contractEnd || 'N/A'} (${days} days left)</strong></div>
-      <div class="dossier-field"><small>Annual Leave Balance</small><strong>${emp.leaveBalance || 21} Days Remaining</strong></div>
-      <div class="dossier-field"><small>Employment Status</small><strong>${emp.status || 'Active'}</strong></div>
+  document.getElementById('employee-dossier-content').innerHTML = `
+    <div class="form-grid" style="margin-bottom:16px;">
+      <div class="form-group"><label>Full Name</label><input type="text" id="edit-emp-name" value="${emp.name}" /></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="edit-emp-email" value="${emp.email || ''}" /></div>
+      <div class="form-group"><label>Phone Number</label><input type="text" id="edit-emp-phone" value="${emp.phone || ''}" /></div>
+      <div class="form-group"><label>NIDA / National ID</label><input type="text" id="edit-emp-nida" value="${emp.nida || ''}" /></div>
+      <div class="form-group"><label>Job Position</label><input type="text" id="edit-emp-role" value="${emp.role}" /></div>
+      <div class="form-group"><label>Branch</label><input type="text" id="edit-emp-branch" value="${emp.branch}" /></div>
+      <div class="form-group"><label>Contract Expiry Date</label><input type="date" id="edit-emp-end" value="${emp.contractEnd || ''}" /></div>
+      <div class="form-group"><label>Basic Salary (TZS)</label><input type="number" id="edit-emp-salary" value="${emp.salary}" /></div>
+      <div class="form-group"><label>Leave Balance (Days)</label><input type="number" id="edit-emp-leave" value="${emp.leaveBalance || 14}" /></div>
+      <div class="form-group"><label>Emergency Contact</label><input type="text" id="edit-emp-emerg" value="${emp.emergencyContact || ''}" /></div>
     </div>
-
-    <div class="form-box" style="margin-bottom:0;">
-      <h4 style="margin-bottom:10px; color:var(--primary); font-size:0.95rem;">HR Contract Update &amp; Renewal Form</h4>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>New Contract End Date</label>
-          <input type="date" id="renew-date-input" value="${emp.contractEnd || ''}" />
-        </div>
-        <div class="form-group">
-          <label>Updated Salary (TZS)</label>
-          <input type="number" id="renew-salary-input" value="${emp.salary}" />
-        </div>
-        <div class="form-group">
-          <button class="btn" onclick="renewEmployeeContract('${emp.$id}')">Save &amp; Update Contract</button>
-        </div>
-      </div>
+    <div style="padding:12px; border-radius:8px; background:${daysLeft <= 60 ? 'var(--danger-bg)' : 'var(--success-bg)'}; color:${daysLeft <= 60 ? 'var(--danger)' : 'var(--success)'}; margin-bottom:16px; font-size:0.88rem;">
+      <strong>Contract Status:</strong> ${daysLeft === 999 ? 'Permanent Staff' : daysLeft + ' days remaining until contract renewal.'}
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn" onclick="saveEmployeeDossier('${emp.$id}')">Save & Update Contract</button>
     </div>
   `;
-  document.getElementById('staff-modal').style.display = 'flex';
+  document.getElementById('employee-modal').style.display = 'flex';
 }
 
-async function renewEmployeeContract(empId) {
-  const newEndDate = document.getElementById('renew-date-input').value;
-  const newSalary = Number(document.getElementById('renew-salary-input').value);
-  if (!newEndDate) return alert('Please select a valid new contract end date.');
+async function saveEmployeeDossier(empId) {
+  const updated = {
+    name: document.getElementById('edit-emp-name').value.trim(),
+    email: document.getElementById('edit-emp-email').value.trim(),
+    phone: document.getElementById('edit-emp-phone').value.trim(),
+    nida: document.getElementById('edit-emp-nida').value.trim(),
+    role: document.getElementById('edit-emp-role').value.trim(),
+    branch: document.getElementById('edit-emp-branch').value.trim(),
+    contractEnd: document.getElementById('edit-emp-end').value,
+    salary: Number(document.getElementById('edit-emp-salary').value),
+    leaveBalance: Number(document.getElementById('edit-emp-leave').value),
+    emergencyContact: document.getElementById('edit-emp-emerg').value.trim()
+  };
 
   if (isLiveAppwrite) {
-    await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.employees, empId, {
-      contractEnd: newEndDate,
-      salary: newSalary
-    });
+    await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.employees, empId, updated);
     await syncFromAppwrite();
   } else {
-    const emp = state.employees.find(e => e.$id === empId);
-    if (emp) {
-      emp.contractEnd = newEndDate;
-      emp.salary = newSalary;
-    }
+    const idx = state.employees.findIndex(e => e.$id === empId);
+    if (idx !== -1) state.employees[idx] = { ...state.employees[idx], ...updated };
+    renderAll();
+  }
+  document.getElementById('employee-modal').style.display = 'none';
+}
+
+async function respondToStaffForm(formId, decision) {
+  const formItem = state.staffForms.find(f => f.$id === formId);
+  if (!formItem) return;
+
+  if (isLiveAppwrite) {
+    await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.staffForms, formId, { status: decision });
+    await syncFromAppwrite();
+  } else {
+    formItem.status = decision;
+    localStorage.setItem('jdm_staff_forms', JSON.stringify(state.staffForms));
     renderAll();
   }
 
-  document.getElementById('staff-modal').style.display = 'none';
-  alert('Employee contract and profile updated successfully.');
+  const subject = encodeURIComponent(`HR Request Update: ${formItem.type} [${decision.toUpperCase()}]`);
+  const body = encodeURIComponent(
+    `Hello ${formItem.name},
+
+Your HR request for "${formItem.type}" (${formItem.dates}) has been reviewed by Human Resources.
+
+Current Status: ${decision.toUpperCase()}
+
+Best regards,
+HR Department - JDM Digital Hub`
+  );
+  window.open(`mailto:${formItem.email}?subject=${subject}&body=${body}`, '_blank');
+}
+
+function copyStaffFormLink() {
+  const url = window.location.href.replace('index.html', '') + 'staff-form.html';
+  copyText(url, 'Staff Self-Service Form Link');
+}
+
+function copyText(text, label) {
+  navigator.clipboard.writeText(text);
+  alert(`${label} copied to clipboard!`);
+}
+
+async function handleAddPortal() {
+  const name = document.getElementById('portal-name').value.trim();
+  const url = document.getElementById('portal-url').value.trim();
+  const username = document.getElementById('portal-user').value.trim();
+  const password = document.getElementById('portal-pass').value.trim();
+
+  if (!name || !url) return alert('Please provide Portal Name and URL.');
+
+  const payload = { name, url, username, password };
+  if (isLiveAppwrite) {
+    await databases.createDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.portals, Appwrite.ID.unique(), payload);
+    await syncFromAppwrite();
+  } else {
+    state.portals.unshift({ $id: 'p_' + Date.now(), ...payload });
+    localStorage.setItem('jdm_external_portals', JSON.stringify(state.portals));
+    renderAll();
+  }
+
+  document.getElementById('portal-name').value = '';
+  document.getElementById('portal-url').value = '';
+  document.getElementById('portal-user').value = '';
+  document.getElementById('portal-pass').value = '';
+}
+
+function launchEmbeddedPortal(portalId) {
+  const portal = state.portals.find(p => p.$id === portalId);
+  if (!portal) return;
+
+  document.getElementById('embedded-workspace').style.display = 'block';
+  document.getElementById('active-portal-title').innerText = portal.name;
+  document.getElementById('active-portal-creds').innerText = `User: ${portal.username}`;
+  document.getElementById('portal-iframe').src = portal.url;
+  document.getElementById('external-fallback-link').href = portal.url;
+
+  document.getElementById('copy-user-btn').onclick = () => copyText(portal.username, 'Username');
+  document.getElementById('copy-pass-btn').onclick = () => copyText(portal.password, 'Password');
+  document.getElementById('embedded-workspace').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeEmbeddedPortal() {
+  document.getElementById('portal-iframe').src = '';
+  document.getElementById('embedded-workspace').style.display = 'none';
 }
 
 async function handleAddEmployee() {
   const name = document.getElementById('emp-name').value.trim();
+  const email = document.getElementById('emp-email').value.trim();
   const role = document.getElementById('emp-role').value.trim();
   const branch = document.getElementById('emp-branch').value;
-  const phone = document.getElementById('emp-phone').value.trim();
-  const email = document.getElementById('emp-email').value.trim();
-  const nida = document.getElementById('emp-nida').value.trim();
-  const emergency = document.getElementById('emp-emergency').value.trim();
-  const contractStart = document.getElementById('emp-start').value;
-  const contractEnd = document.getElementById('emp-end').value;
+  const contractEnd = document.getElementById('emp-contract-end').value;
   const salary = Number(document.getElementById('emp-salary').value);
 
-  if (!name || !role || !contractEnd || !salary) {
-    return alert('Please fill in Name, Role, Contract End Date, and Salary.');
-  }
+  if (!name || !role || !salary) return alert('Please fill in Name, Role, and Salary.');
 
-  const payload = {
-    name, role, branch, phone, email, nida, emergency,
-    contractStart, contractEnd, salary, leaveBalance: 21, status: 'Active'
-  };
-
+  const payload = { name, email, role, branch, contractEnd, salary, status: 'Active' };
   if (isLiveAppwrite) {
     await databases.createDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.employees, Appwrite.ID.unique(), payload);
     await syncFromAppwrite();
   } else {
-    state.employees.unshift({ $id: Date.now().toString(), ...payload });
+    state.employees.unshift({ $id: 'emp_' + Date.now(), ...payload });
     renderAll();
   }
-
-  ['emp-name', 'emp-role', 'emp-phone', 'emp-email', 'emp-nida', 'emp-emergency', 'emp-start', 'emp-end', 'emp-salary']
-    .forEach(id => document.getElementById(id).value = '');
 }
 
 async function handleAddLeave() {
   const emp = document.getElementById('leave-emp').value.trim();
   const type = document.getElementById('leave-type').value;
   const dates = document.getElementById('leave-dates').value.trim();
-  const notes = document.getElementById('leave-notes').value.trim();
   const branch = document.getElementById('branch-filter').value === 'ALL' ? 'Indira Gandhi' : document.getElementById('branch-filter').value;
 
   if (!emp || !dates) return alert('Please fill in employee name and dates.');
-
-  const payload = { emp, branch, type, dates, notes, status: 'Pending' };
+  const payload = { emp, branch, type, dates, status: 'Pending' };
 
   if (isLiveAppwrite) {
     await databases.createDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.leaves, Appwrite.ID.unique(), payload);
     await syncFromAppwrite();
   } else {
-    state.leaves.unshift({ $id: Date.now().toString(), ...payload });
+    state.leaves.unshift({ $id: 'l_' + Date.now(), ...payload });
     renderAll();
   }
+}
 
-  document.getElementById('leave-emp').value = '';
-  document.getElementById('leave-dates').value = '';
-  document.getElementById('leave-notes').value = '';
+async function approveLeave(id) {
+  if (isLiveAppwrite) {
+    await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.leaves, id, { status: 'Approved' });
+    await syncFromAppwrite();
+  } else {
+    const item = state.leaves.find(l => l.$id === id);
+    if (item) item.status = 'Approved';
+    renderAll();
+  }
 }
 
 async function handleAddAppointment() {
   const type = document.getElementById('appt-type').value;
-  const participant = document.getElementById('appt-participant').value.trim();
-  const datetime = document.getElementById('appt-datetime').value.trim();
-  const agenda = document.getElementById('appt-agenda').value.trim();
-  const branch = document.getElementById('branch-filter').value === 'ALL' ? 'Indira Gandhi' : document.getElementById('branch-filter').value;
+  const person = document.getElementById('appt-person').value.trim();
+  const subject = document.getElementById('appt-subject').value.trim();
+  const datetime = document.getElementById('appt-datetime').value;
 
-  if (!participant || !datetime || !agenda) return alert('Please complete all appointment fields.');
-
-  const payload = { type, participant, branch, datetime, agenda, status: 'Scheduled' };
+  if (!person || !subject || !datetime) return alert('Please fill in all appointment fields.');
+  const payload = { type, person, subject, datetime, status: 'Scheduled' };
 
   if (isLiveAppwrite) {
     await databases.createDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.appointments, Appwrite.ID.unique(), payload);
     await syncFromAppwrite();
   } else {
-    state.appointments.unshift({ $id: Date.now().toString(), ...payload });
+    state.appointments.unshift({ $id: 'ap_' + Date.now(), ...payload });
     renderAll();
   }
-
-  document.getElementById('appt-participant').value = '';
-  document.getElementById('appt-datetime').value = '';
-  document.getElementById('appt-agenda').value = '';
 }
 
-async function handleAddExpense() {
-  const emp = document.getElementById('exp-emp').value.trim();
-  const desc = document.getElementById('exp-desc').value.trim();
-  const amount = Number(document.getElementById('exp-amt').value);
-  const branch = document.getElementById('branch-filter').value === 'ALL' ? 'Indira Gandhi' : document.getElementById('branch-filter').value;
-
-  if (!emp || !desc || !amount) return alert('Please complete all expense claim fields.');
-
-  const payload = { emp, branch, desc, amount, status: 'Pending' };
-
+async function completeAppointment(id) {
   if (isLiveAppwrite) {
-    await databases.createDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.expenses, Appwrite.ID.unique(), payload);
+    await databases.updateDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.appointments, id, { status: 'Completed' });
     await syncFromAppwrite();
   } else {
-    state.expenses.unshift({ $id: Date.now().toString(), ...payload });
-    renderAll();
-  }
-
-  document.getElementById('exp-emp').value = '';
-  document.getElementById('exp-desc').value = '';
-  document.getElementById('exp-amt').value = '';
-}
-
-async function approveItem(type, id, newStatus) {
-  if (isLiveAppwrite) {
-    const col = APPWRITE_CONFIG.collections[type];
-    await databases.updateDocument(APPWRITE_CONFIG.databaseId, col, id, { status: newStatus });
-    await syncFromAppwrite();
-  } else {
-    const target = state[type].find(item => item.$id === id);
-    if (target) target.status = newStatus;
+    const item = state.appointments.find(a => a.$id === id);
+    if (item) item.status = 'Completed';
     renderAll();
   }
 }
@@ -479,18 +522,13 @@ function openPayslip(name, role, branch, gross, nssf, net) {
 }
 
 function exportCSV() {
-  const rows = [['Name', 'Role', 'Branch', 'Phone', 'NIDA', 'Contract Start', 'Contract End', 'Days Remaining', 'Salary', 'Status']];
-  state.employees.forEach(e => {
-    rows.push([
-      e.name, e.role, e.branch, e.phone || '', e.nida || '',
-      e.contractStart || '', e.contractEnd || '', calculateDaysRemaining(e.contractEnd),
-      e.salary, e.status
-    ]);
-  });
-  const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.join(',')).join('\n');
+  const rows = [['Name', 'Email', 'Role', 'Branch', 'Contract End', 'Salary', 'Status']];
+  state.employees.forEach(e => rows.push([e.name, e.email || '', e.role, e.branch, e.contractEnd || '', e.salary, e.status]));
+  const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.join(',')).join('
+');
   const link = document.createElement('a');
   link.setAttribute('href', encodeURI(csvContent));
-  link.setAttribute('download', 'JDM_HR_Full_Staff_Dossier.csv');
+  link.setAttribute('download', 'JDM_HR_Staff_Report.csv');
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

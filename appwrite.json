@@ -22,18 +22,130 @@
       "enabled": true,
       "documentSecurity": false,
       "attributes": [
-        { "key": "name", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
-        { "key": "role", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "phone", "type": "string", "status": "available", "required": false, "array": false, "size": 50 },
-        { "key": "email", "type": "string", "status": "available", "required": false, "array": false, "size": 150 },
-        { "key": "nida", "type": "string", "status": "available", "required": false, "array": false, "size": 100 },
-        { "key": "emergency", "type": "string", "status": "available", "required": false, "array": false, "size": 150 },
-        { "key": "contractStart", "type": "string", "status": "available", "required": false, "array": false, "size": 30 },
-        { "key": "contractEnd", "type": "string", "status": "available", "required": true, "array": false, "size": 30 },
-        { "key": "salary", "type": "integer", "status": "available", "required": true, "array": false },
-        { "key": "leaveBalance", "type": "integer", "status": "available", "required": false, "array": false, "default": 21 },
-        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Active" }
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "size": 150
+        },
+        {
+          "key": "email",
+          "type": "string",
+          "required": false,
+          "size": 150
+        },
+        {
+          "key": "phone",
+          "type": "string",
+          "required": false,
+          "size": 50
+        },
+        {
+          "key": "nida",
+          "type": "string",
+          "required": false,
+          "size": 50
+        },
+        {
+          "key": "role",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "branch",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "contractEnd",
+          "type": "string",
+          "required": false,
+          "size": 50
+        },
+        {
+          "key": "salary",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "key": "leaveBalance",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "key": "emergencyContact",
+          "type": "string",
+          "required": false,
+          "size": 200
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": false,
+          "size": 50,
+          "default": "Active"
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "$id": "staff_forms",
+      "$permissions": [
+        "create(\"any\")",
+        "read(\"any\")",
+        "update(\"any\")",
+        "delete(\"any\")"
+      ],
+      "databaseId": "hr_portal_db",
+      "name": "Staff Forms",
+      "enabled": true,
+      "documentSecurity": false,
+      "attributes": [
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "size": 150
+        },
+        {
+          "key": "email",
+          "type": "string",
+          "required": true,
+          "size": 150
+        },
+        {
+          "key": "branch",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "type",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "dates",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "notes",
+          "type": "string",
+          "required": false,
+          "size": 300
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": false,
+          "size": 50,
+          "default": "Pending"
+        }
       ],
       "indexes": []
     },
@@ -46,16 +158,41 @@
         "delete(\"any\")"
       ],
       "databaseId": "hr_portal_db",
-      "name": "Leave & Off-Days",
+      "name": "Leave Requests",
       "enabled": true,
       "documentSecurity": false,
       "attributes": [
-        { "key": "emp", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
-        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "type", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "dates", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "notes", "type": "string", "status": "available", "required": false, "array": false, "size": 250 },
-        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Pending" }
+        {
+          "key": "emp",
+          "type": "string",
+          "required": true,
+          "size": 150
+        },
+        {
+          "key": "branch",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "type",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "dates",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": false,
+          "size": 50,
+          "default": "Pending"
+        }
       ],
       "indexes": []
     },
@@ -68,21 +205,46 @@
         "delete(\"any\")"
       ],
       "databaseId": "hr_portal_db",
-      "name": "HR Appointments",
+      "name": "Appointments",
       "enabled": true,
       "documentSecurity": false,
       "attributes": [
-        { "key": "type", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "participant", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
-        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "datetime", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "agenda", "type": "string", "status": "available", "required": true, "array": false, "size": 250 },
-        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Scheduled" }
+        {
+          "key": "type",
+          "type": "string",
+          "required": true,
+          "size": 100
+        },
+        {
+          "key": "person",
+          "type": "string",
+          "required": true,
+          "size": 150
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "required": true,
+          "size": 200
+        },
+        {
+          "key": "datetime",
+          "type": "string",
+          "required": true,
+          "size": 50
+        },
+        {
+          "key": "status",
+          "type": "string",
+          "required": false,
+          "size": 50,
+          "default": "Scheduled"
+        }
       ],
       "indexes": []
     },
     {
-      "$id": "expense_claims",
+      "$id": "external_portals",
       "$permissions": [
         "create(\"any\")",
         "read(\"any\")",
@@ -90,15 +252,34 @@
         "delete(\"any\")"
       ],
       "databaseId": "hr_portal_db",
-      "name": "Expense Claims",
+      "name": "External Portals",
       "enabled": true,
       "documentSecurity": false,
       "attributes": [
-        { "key": "emp", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
-        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
-        { "key": "desc", "type": "string", "status": "available", "required": true, "array": false, "size": 250 },
-        { "key": "amount", "type": "integer", "status": "available", "required": true, "array": false },
-        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Pending" }
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "size": 150
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "required": true,
+          "size": 300
+        },
+        {
+          "key": "username",
+          "type": "string",
+          "required": false,
+          "size": 150
+        },
+        {
+          "key": "password",
+          "type": "string",
+          "required": false,
+          "size": 150
+        }
       ],
       "indexes": []
     }
