@@ -3,47 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JDM Digital Hub | HR & Operations Portal</title>
+  <title>JDM Digital Hub | HR & Payroll Portal</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://jsdelivr.net"></script>
 </head>
 <body>
   <aside class="sidebar">
-    <div class="brand"><h2>JDM HR Portal</h2><span>Workforce, Agenda & Payroll</span></div>
+    <div class="brand">
+      <h2>JDM HR Portal</h2>
+      <span>Workforce, Portals & Payroll</span>
+    </div>
     <ul class="nav-menu">
-      <li class="nav-item active" data-tab="dashboard" onclick="openSection('dashboard', this)">Dashboard Overview</li>
-      <li class="nav-item" data-tab="weekly-agenda" onclick="openSection('weekly-agenda', this)">Weekly Operations Agenda</li>
-      <li class="nav-item" data-tab="staff" onclick="openSection('staff', this)">Staff & E-Onboarding</li>
-      <li class="nav-item" data-tab="forms-inbox" onclick="openSection('forms-inbox', this)">Staff Forms & Email Reply</li>
-      <li class="nav-item" data-tab="leave" onclick="openSection('leave', this)">Leave & Off-Days</li>
-      <li class="nav-item" data-tab="appointments" onclick="openSection('appointments', this)">Appointments</li>
-      <li class="nav-item" data-tab="portals" onclick="openSection('portals', this)">External Portals Vault</li>
-      <li class="nav-item" data-tab="payroll" onclick="openSection('payroll', this)">Payroll & Payslips</li>
+      <li class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard', this)">Dashboard Overview</li>
+      <li class="nav-item" data-tab="weekly-agenda" onclick="switchTab('weekly-agenda', this)">Weekly Operations Agenda</li>
+      <li class="nav-item" data-tab="staff" onclick="switchTab('staff', this)">Staff & E-Onboarding</li>
+      <li class="nav-item" data-tab="forms-inbox" onclick="switchTab('forms-inbox', this)">Staff Forms & Email Reply</li>
+      <li class="nav-item" data-tab="leave" onclick="switchTab('leave', this)">Leave & Off-Days</li>
+      <li class="nav-item" data-tab="appointments" onclick="switchTab('appointments', this)">Appointments</li>
+      <li class="nav-item" data-tab="portals" onclick="switchTab('portals', this)">External Portals Vault</li>
+      <li class="nav-item" data-tab="payroll" onclick="switchTab('payroll', this)">Payroll & Payslips</li>
     </ul>
     <div class="sidebar-footer">JDM Digital Hub &bull; GitHub + Appwrite</div>
   </aside>
 
   <div class="main-content">
     <header class="topbar">
-      <h1 id="page-title">Dashboard Overview</h1>
-      <div style="display:flex; align-items:center; gap:10px;">
+      <div class="topbar-left"><h1 id="page-title">Dashboard Overview</h1></div>
+      <div class="topbar-right">
         <select id="branch-filter" onchange="renderAll()" class="branch-select">
           <option value="ALL">All Branches</option>
           <option value="Indira Gandhi">Indira Gandhi Branch</option>
           <option value="Makunganya">Makunganya Branch</option>
           <option value="Chikongola">Chikongola Branch</option>
         </select>
-        <span class="status-pill">Live Portal</span>
+        <span id="connection-badge" class="status-pill">Demo Mode</span>
       </div>
     </header>
 
     <div class="container">
       <div id="contract-alert-banner" class="alert-banner" style="display:none;">
-        <div><strong>Contract Renewal Reminder (60-Day Rule):</strong> <span id="contract-alert-text"></span></div>
-        <button class="btn btn-sm" onclick="jumpToTab('staff')">Review Contracts</button>
+        <div><strong>Contract Renewal Reminder (60-Day Rule):</strong><span id="contract-alert-text"></span></div>
+        <button class="btn btn-sm" onclick="switchTab('staff', document.querySelector('[data-tab=\'staff\']'))">Review Contracts</button>
       </div>
 
       <div class="stats-grid">
-        <div class="stat-card"><h3>Active Employees</h3><div class="value" id="kpi-staff">0</div><div class="sub">Click any staff name for full form</div></div>
+        <div class="stat-card"><h3>Active Employees</h3><div class="value" id="kpi-staff">0</div><div class="sub">Click any staff row for full form</div></div>
         <div class="stat-card"><h3>Contracts &le; 60 Days</h3><div class="value" id="kpi-contracts" style="color:var(--danger);">0</div><div class="sub">Require renewal attention</div></div>
         <div class="stat-card"><h3>Pending Staff Forms</h3><div class="value" id="kpi-forms">0</div><div class="sub">Awaiting email feedback</div></div>
         <div class="stat-card"><h3>Saved External Portals</h3><div class="value" id="kpi-portals">0</div><div class="sub">NSSF, NHIF, TRA & Services</div></div>
@@ -52,19 +56,20 @@
       <div id="dashboard" class="section active">
         <div class="section-header">
           <h2>Executive HR & Operations Summary</h2>
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn" onclick="copyStaffFormLink()">Copy Staff Form Link</button>
             <button class="btn btn-outline" onclick="exportCSV()">Export Staff CSV</button>
           </div>
         </div>
+        <p class="desc-text">Centralized HR command center. Send the self-service form link to staff, approve requests with instant email feedback, monitor 60-day contract expirations, and launch NSSF/NHIF portals directly inside your workspace.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>System Capability</th><th>Description</th><th>Quick Action</th></tr></thead>
             <tbody>
-              <tr><td><strong>Weekly Operations Meeting Agenda</strong></td><td>Tiffany Diamond Hotels Tuesday & Friday GM/HR agenda builder + PDF</td><td><button class="btn btn-sm" onclick="jumpToTab('weekly-agenda')">Open Agenda</button></td></tr>
-              <tr><td><strong>Staff Self-Service Form & Email Reply</strong></td><td>Send form link to staff; HR approval sends automatic status email</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('forms-inbox')">Open Inbox</button></td></tr>
-              <tr><td><strong>External Portals & Credential Vault</strong></td><td>Store NSSF, NHIF, TRA links & credentials and open inside portal</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('portals')">Open Vault</button></td></tr>
-              <tr><td><strong>Full Employee Dossier & 60-Day Alerts</strong></td><td>Click any employee row to open complete HR record & contract timer</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('staff')">View Staff</button></td></tr>
+              <tr><td><strong>Weekly Operations Meeting Agenda</strong></td><td>Tiffany Diamond Hotels Tuesday & Friday GM/HR agenda builder + PDF</td><td><button class="btn btn-sm" onclick="switchTab('weekly-agenda', document.querySelector('[data-tab=\'weekly-agenda\']'))">Open Agenda</button></td></tr>
+              <tr><td><strong>Staff Self-Service Form & Email Reply</strong></td><td>Send form link to staff; HR approval sends automatic status email</td><td><button class="btn btn-outline btn-sm" onclick="switchTab('forms-inbox', document.querySelector('[data-tab=\'forms-inbox\']'))">Open Inbox</button></td></tr>
+              <tr><td><strong>External Portals & Credential Vault</strong></td><td>Store NSSF, NHIF, TRA links & credentials and open inside portal</td><td><button class="btn btn-outline btn-sm" onclick="switchTab('portals', document.querySelector('[data-tab=\'portals\']'))">Open Vault</button></td></tr>
+              <tr><td><strong>Full Employee Dossier & 60-Day Alerts</strong></td><td>Click any employee row to open complete HR record & contract timer</td><td><button class="btn btn-outline btn-sm" onclick="switchTab('staff', document.querySelector('[data-tab=\'staff\']'))">View Staff</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -73,8 +78,8 @@
       <div id="weekly-agenda" class="section">
         <div class="agenda-banner no-print">
           <div class="hotel-tag">Tiffany Diamond Hotels Limited - The Top and Best in Tanzania</div>
-          <h3>Weekly Operations Meeting</h3>
-          <p style="font-size:0.8rem; color:#cbd5e1;">Every Tuesday and Friday &middot; Chairperson: General Manager &middot; Secretary: HR Manager</p>
+          <h3 style="margin-top:4px;">Weekly Operations Meeting</h3>
+          <p style="font-size:0.82rem; color:#cbd5e1; margin-top:2px;">Every Tuesday and Friday &middot; Chairperson: General Manager &middot; Secretary: HR Manager</p>
         </div>
         <div class="agenda-split">
           <div class="no-print">
@@ -88,7 +93,7 @@
               <div class="form-group"><label>Recap of the previous meeting (GM)</label><textarea id="ag-recap" rows="2" oninput="updateAgendaPreview()"></textarea></div>
             </div>
             <div class="agenda-step">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <h4 style="border:none; margin:0; padding:0;">2. Meeting participants</h4>
                 <button class="btn btn-outline btn-sm" onclick="addParticipantRow()">+ Add participant</button>
               </div>
@@ -101,36 +106,32 @@
                 <div class="form-group"><label>Group email</label><input type="email" id="ag-group-email" value="staff@tiffanydiamondhotels.com" /></div>
                 <div class="form-group"><label>HR access code</label><input type="password" id="ag-access-code" placeholder="Enter HR code" /></div>
               </div>
-              <button class="btn" style="width:100%; margin-top:8px;" onclick="sendWeeklyAgenda()">Send agenda</button>
+              <button class="btn" style="width:100%; margin-top:10px;" onclick="sendWeeklyAgenda()">Send agenda</button>
             </div>
           </div>
           <div class="preview-paper">
             <div style="border-bottom:2px solid var(--primary); padding-bottom:10px; margin-bottom:12px; display:flex; justify-content:space-between;">
               <div>
-                <div style="font-size:0.7rem; font-weight:700; color:#b45309;">TIFFANY DIAMOND HOTELS LIMITED</div>
-                <h3 style="font-size:1.1rem; color:var(--primary);">Meeting Agenda</h3>
-                <div style="font-size:0.75rem; color:var(--muted);">Chairperson: General Manager &bull; Secretary: HR Manager</div>
+                <div style="font-size:0.72rem; font-weight:700; color:#b45309;">TIFFANY DIAMOND HOTELS LIMITED</div>
+                <h3 style="font-size:1.15rem; color:var(--primary);">Meeting Agenda</h3>
+                <div style="font-size:0.76rem; color:var(--muted);">Chairperson: General Manager &bull; Secretary: HR Manager</div>
               </div>
               <button class="btn btn-sm no-print" onclick="window.print()">Download PDF</button>
             </div>
-            <div style="background:#f8fafc; padding:8px 10px; border-radius:6px; font-size:0.8rem; margin-bottom:10px; display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+            <div style="background:#f8fafc; padding:10px 12px; border-radius:6px; font-size:0.82rem; margin-bottom:10px; display:grid; grid-template-columns:1fr 1fr; gap:6px;">
               <div><strong>Date:</strong> <span id="prev-date">-</span></div>
               <div><strong>Time:</strong> <span id="prev-time">09:00</span></div>
               <div><strong>Venue:</strong> <span id="prev-venue">-</span></div>
               <div><strong>Total:</strong> <strong id="prev-total-min">0</strong> min (Ends <strong id="prev-end-time">-</strong>)</div>
             </div>
-            <div id="prev-recap-box" style="display:none; font-size:0.8rem; margin-bottom:10px; padding:6px 10px; border-left:3px solid var(--accent); background:#f8fafc;"><strong>Recap (GM):</strong> <span id="prev-recap"></span></div>
-            <div style="margin-bottom:10px;"><strong style="font-size:0.8rem;">Participants Present:</strong><div id="prev-participants" style="font-size:0.78rem; margin-top:4px;"></div></div>
-            <table><thead><tr><th style="width:85px;">Time</th><th>Agenda item</th><th>Responsible & key points</th></tr></thead><tbody id="prev-agenda-tbody"></tbody></table>
+            <div id="prev-recap-box" style="display:none; font-size:0.82rem; margin-bottom:10px; padding:8px 10px; border-left:3px solid var(--accent); background:#f8fafc;"><strong>Recap (GM):</strong> <span id="prev-recap"></span></div>
+            <div style="margin-bottom:10px;"><strong style="font-size:0.82rem;">Participants Present:</strong><div id="prev-participants" style="font-size:0.78rem; margin-top:4px;"></div></div>
+            <table><thead><tr><th style="width:90px;">Time</th><th>Agenda item</th><th>Responsible & key points</th></tr></thead><tbody id="prev-agenda-tbody"></tbody></table>
           </div>
         </div>
       </div>
 
       <div id="staff" class="section">
-        <div class="section-header"><h2>Staff Directory & Contract Monitor</h2></div>
+        <div class="section-header"><h2>Staff Directory & Contract Monitor (Click Row for Full Form)</h2></div>
         <div class="form-box">
           <div class="form-grid">
-            <div class="form-group"><label>Full Name</label><input type="text" id="emp-name" placeholder="Neema Mwakalinga" /></div>
-            <div class="form-group"><label>Email</label><input type="email" id="emp-email" placeholder="neema@company.co.tz" /></div>
-            <div class="form-group"><label>Role</label><input type="text" id="emp-role" placeholder="Front Desk Supervisor" /></div>
-            <div class="form-group"><label>Branch</label><select id="emp-branch"><option value="Indira Gandhi">Indira Gandhi</option><option value="Makunganya">Makunganya</option><option value="Chikongola">Chikongola</option></select></div>
