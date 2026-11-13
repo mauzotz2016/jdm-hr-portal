@@ -1,6 +1,6 @@
 const APPWRITE_CONFIG = {
   endpoint: 'https://cloud.appwrite.io/v1',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: 'JDM HR Portal',
   databaseId: 'hr_portal_db',
   collections: {
     employees: 'employees',
@@ -9,7 +9,7 @@ const APPWRITE_CONFIG = {
   }
 };
 
-const isLiveAppwrite = APPWRITE_CONFIG.projectId !== 'YOUR_PROJECT_ID';
+const isLiveAppwrite = APPWRITE_CONFIG.projectId !== 'JDM HR Portal';
 let databases = null;
 
 if (isLiveAppwrite) {
