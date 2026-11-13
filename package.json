@@ -1,0 +1,8 @@
+{
+  "name": "jdm-hr-portal",
+  "version": "1.0.0",
+  "description": "JDM HR & Payroll Portal",
+  "scripts": {
+    "build": "echo 'Static HTML ready'"
+  }
+}
