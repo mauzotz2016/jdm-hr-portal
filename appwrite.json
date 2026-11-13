@@ -25,7 +25,14 @@
         { "key": "name", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
         { "key": "role", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
         { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "phone", "type": "string", "status": "available", "required": false, "array": false, "size": 50 },
+        { "key": "email", "type": "string", "status": "available", "required": false, "array": false, "size": 150 },
+        { "key": "nida", "type": "string", "status": "available", "required": false, "array": false, "size": 100 },
+        { "key": "emergency", "type": "string", "status": "available", "required": false, "array": false, "size": 150 },
+        { "key": "contractStart", "type": "string", "status": "available", "required": false, "array": false, "size": 30 },
+        { "key": "contractEnd", "type": "string", "status": "available", "required": true, "array": false, "size": 30 },
         { "key": "salary", "type": "integer", "status": "available", "required": true, "array": false },
+        { "key": "leaveBalance", "type": "integer", "status": "available", "required": false, "array": false, "default": 21 },
         { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Active" }
       ],
       "indexes": []
@@ -39,7 +46,7 @@
         "delete(\"any\")"
       ],
       "databaseId": "hr_portal_db",
-      "name": "Leave Requests",
+      "name": "Leave & Off-Days",
       "enabled": true,
       "documentSecurity": false,
       "attributes": [
@@ -47,7 +54,30 @@
         { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
         { "key": "type", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
         { "key": "dates", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "notes", "type": "string", "status": "available", "required": false, "array": false, "size": 250 },
         { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Pending" }
+      ],
+      "indexes": []
+    },
+    {
+      "$id": "appointments",
+      "$permissions": [
+        "create(\"any\")",
+        "read(\"any\")",
+        "update(\"any\")",
+        "delete(\"any\")"
+      ],
+      "databaseId": "hr_portal_db",
+      "name": "HR Appointments",
+      "enabled": true,
+      "documentSecurity": false,
+      "attributes": [
+        { "key": "type", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "participant", "type": "string", "status": "available", "required": true, "array": false, "size": 150 },
+        { "key": "branch", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "datetime", "type": "string", "status": "available", "required": true, "array": false, "size": 100 },
+        { "key": "agenda", "type": "string", "status": "available", "required": true, "array": false, "size": 250 },
+        { "key": "status", "type": "string", "status": "available", "required": false, "array": false, "size": 50, "default": "Scheduled" }
       ],
       "indexes": []
     },

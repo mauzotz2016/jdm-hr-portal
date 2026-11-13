@@ -17,7 +17,8 @@
     <ul class="nav-menu">
       <li class="nav-item active" onclick="switchTab('dashboard', this)">Dashboard Overview</li>
       <li class="nav-item" onclick="switchTab('staff', this)">Staff & E-Onboarding</li>
-      <li class="nav-item" onclick="switchTab('leave', this)">Leave Management</li>
+      <li class="nav-item" onclick="switchTab('leave', this)">Leave & Off-Days</li>
+      <li class="nav-item" onclick="switchTab('appointments', this)">HR Appointments</li>
       <li class="nav-item" onclick="switchTab('expenses', this)">Expense Claims</li>
       <li class="nav-item" onclick="switchTab('payroll', this)">Payroll & Payslips</li>
       <li class="nav-item" onclick="switchTab('assets', this)">Assets & Training</li>
@@ -44,69 +45,86 @@
     </header>
 
     <div class="container">
+      <!-- 60-Day Contract Renewal Alert Banner -->
+      <div id="contract-alert-banner" class="alert-banner" style="display:none;">
+        <div class="alert-banner-header">
+          <strong>Contract Renewal Reminder (60 Days or Less Remaining)</strong>
+          <button class="btn btn-sm btn-outline" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[1])">Review Staff Contracts</button>
+        </div>
+        <ul id="contract-alert-list" class="alert-list"></ul>
+      </div>
+
+      <!-- KPI Cards -->
       <div class="stats-grid">
         <div class="stat-card">
           <h3>Active Employees</h3>
           <div class="value" id="kpi-staff">0</div>
-          <div class="sub">Across selected branches</div>
+          <div class="sub">Click any staff to view full form</div>
         </div>
         <div class="stat-card">
-          <h3>Pending Leave</h3>
+          <h3>Contracts Expiring (&le;60d)</h3>
+          <div class="value" id="kpi-contracts" style="color: var(--danger);">0</div>
+          <div class="sub">Requires HR renewal action</div>
+        </div>
+        <div class="stat-card">
+          <h3>Pending Leave & Off-Days</h3>
           <div class="value" id="kpi-leave">0</div>
-          <div class="sub">Awaiting supervisor action</div>
+          <div class="sub">Awaiting supervisor approval</div>
         </div>
         <div class="stat-card">
-          <h3>Pending Expenses</h3>
-          <div class="value" id="kpi-expenses">0</div>
-          <div class="sub">Multi-level claim queue</div>
-        </div>
-        <div class="stat-card">
-          <h3>Monthly Gross Payroll</h3>
-          <div class="value" id="kpi-payroll">TZS 0</div>
-          <div class="sub">Estimated current cycle</div>
+          <h3>Upcoming Appointments</h3>
+          <div class="value" id="kpi-appointments">0</div>
+          <div class="sub">Company, HR & Staff meetings</div>
         </div>
       </div>
 
+      <!-- 1. Dashboard -->
       <div id="dashboard" class="section active">
         <div class="section-header">
           <h2>Executive HR & Operations Summary</h2>
-          <button class="btn btn-outline" onclick="exportCSV()">Export Staff Report (CSV)</button>
+          <button class="btn btn-outline" onclick="exportCSV()">Export Full Staff CSV</button>
         </div>
         <p class="desc-text">
-          Centralized HR & Payroll workspace connected to GitHub and Appwrite. Use the branch selector above to filter staff, leave approvals, expense claims, and payslips.
+          Centralized HR & Payroll workspace. Click any employee name in the Staff directory to open their complete personal dossier, contract countdown, and renewal form.
         </p>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Core Module</th>
-                <th>Workflow Rule</th>
+                <th>Workflow & Alert Rule</th>
                 <th>Appwrite Collection</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>E-Onboarding & Directory</strong></td>
-                <td>Branch Assignment & Role Setup</td>
+                <td><strong>Staff Dossier & 60-Day Contract Monitor</strong></td>
+                <td>Auto-alerts HR when contract has &le;60 days left</td>
                 <td><code>employees</code></td>
                 <td><span class="badge badge-approved">Operational</span></td>
               </tr>
               <tr>
-                <td><strong>Employee Self-Service (Leave)</strong></td>
-                <td>Direct Supervisor Approval</td>
+                <td><strong>Leave & Off-Days Management</strong></td>
+                <td>Tracks Annual/Sick Leave & Weekly Off-Days</td>
                 <td><code>leave_requests</code></td>
                 <td><span class="badge badge-approved">Operational</span></td>
               </tr>
               <tr>
-                <td><strong>Expense Reimbursements</strong></td>
-                <td>Supervisor -> Finance Approval</td>
+                <td><strong>HR & Management Appointments</strong></td>
+                <td>Schedules Company-HR & HR-Staff sessions</td>
+                <td><code>appointments</code></td>
+                <td><span class="badge badge-approved">Operational</span></td>
+              </tr>
+              <tr>
+                <td><strong>Expense Claims & Reimbursements</strong></td>
+                <td>Multi-level approval & payout tracking</td>
                 <td><code>expense_claims</code></td>
                 <td><span class="badge badge-approved">Operational</span></td>
               </tr>
               <tr>
                 <td><strong>Payroll & Statutory Engine</strong></td>
-                <td>NSSF (10%) & Net Pay Automation</td>
+                <td>NSSF (10%) & Net Take-Home Payslip Generator</td>
                 <td><code>payroll_runs</code></td>
                 <td><span class="badge badge-approved">Ready</span></td>
               </tr>
@@ -115,22 +133,23 @@
         </div>
       </div>
 
+      <!-- 2. Staff & E-Onboarding -->
       <div id="staff" class="section">
         <div class="section-header">
-          <h2>Staff Directory & E-Onboarding</h2>
+          <h2>Staff Directory, Full Profiles & Contract Monitor</h2>
         </div>
         <div class="form-box">
           <div class="form-grid">
             <div class="form-group">
-              <label>Full Name</label>
+              <label>Full Name *</label>
               <input type="text" id="emp-name" placeholder="e.g. Neema Mwakalinga" />
             </div>
             <div class="form-group">
-              <label>Job Title</label>
+              <label>Job Title / Role *</label>
               <input type="text" id="emp-role" placeholder="e.g. Front Desk Supervisor" />
             </div>
             <div class="form-group">
-              <label>Branch</label>
+              <label>Branch *</label>
               <select id="emp-branch">
                 <option value="Indira Gandhi">Indira Gandhi</option>
                 <option value="Makunganya">Makunganya</option>
@@ -138,11 +157,35 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Basic Salary (TZS)</label>
+              <label>Phone Number *</label>
+              <input type="text" id="emp-phone" placeholder="e.g. +255 712 345 678" />
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="emp-email" placeholder="staff@company.co.tz" />
+            </div>
+            <div class="form-group">
+              <label>NIDA / National ID</label>
+              <input type="text" id="emp-nida" placeholder="19950412-12345-00001-20" />
+            </div>
+            <div class="form-group">
+              <label>Emergency Contact</label>
+              <input type="text" id="emp-emergency" placeholder="Name & Phone" />
+            </div>
+            <div class="form-group">
+              <label>Contract Start Date *</label>
+              <input type="date" id="emp-start" />
+            </div>
+            <div class="form-group">
+              <label>Contract End Date *</label>
+              <input type="date" id="emp-end" />
+            </div>
+            <div class="form-group">
+              <label>Basic Salary (TZS) *</label>
               <input type="number" id="emp-salary" placeholder="850000" />
             </div>
             <div class="form-group">
-              <button class="btn" onclick="handleAddEmployee()">+ Onboard Staff</button>
+              <button class="btn" onclick="handleAddEmployee()">+ Register Full Staff Profile</button>
             </div>
           </div>
         </div>
@@ -150,11 +193,12 @@
           <table>
             <thead>
               <tr>
-                <th>Employee Name</th>
-                <th>Role</th>
-                <th>Branch</th>
+                <th>Employee Name (Click for Form)</th>
+                <th>Role & Branch</th>
+                <th>Contract End</th>
+                <th>Days Left</th>
                 <th>Basic Salary</th>
-                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="staff-tbody"></tbody>
@@ -162,19 +206,22 @@
         </div>
       </div>
 
+      <!-- 3. Leave & Off-Days Management -->
       <div id="leave" class="section">
         <div class="section-header">
-          <h2>Leave Requests & Approval Queue</h2>
+          <h2>Leave & Off-Day Requests</h2>
         </div>
         <div class="form-box">
           <div class="form-grid">
             <div class="form-group">
-              <label>Employee Name</label>
+              <label>Employee Name *</label>
               <input type="text" id="leave-emp" placeholder="Enter staff name" />
             </div>
             <div class="form-group">
-              <label>Leave Category</label>
+              <label>Request Category *</label>
               <select id="leave-type">
+                <option value="Weekly Off-Day">Weekly Off-Day</option>
+                <option value="Compensatory Off-Day">Compensatory Off-Day</option>
                 <option value="Annual Leave">Annual Leave</option>
                 <option value="Sick Leave">Sick Leave</option>
                 <option value="Maternity / Paternity">Maternity / Paternity</option>
@@ -182,11 +229,15 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Date Range</label>
-              <input type="text" id="leave-dates" placeholder="e.g. Nov 18 - Nov 22, 2026" />
+              <label>Date / Date Range *</label>
+              <input type="text" id="leave-dates" placeholder="e.g. Nov 18, 2026 or Nov 20-24" />
             </div>
             <div class="form-group">
-              <button class="btn" onclick="handleAddLeave()">+ Log Leave Request</button>
+              <label>Reason / Relief Notes</label>
+              <input type="text" id="leave-notes" placeholder="Optional handover details" />
+            </div>
+            <div class="form-group">
+              <button class="btn" onclick="handleAddLeave()">+ Submit Leave / Off-Day</button>
             </div>
           </div>
         </div>
@@ -196,8 +247,9 @@
               <tr>
                 <th>Employee</th>
                 <th>Branch</th>
-                <th>Leave Type</th>
+                <th>Category</th>
                 <th>Dates</th>
+                <th>Notes</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -207,6 +259,58 @@
         </div>
       </div>
 
+      <!-- 4. HR & Management Appointments -->
+      <div id="appointments" class="section">
+        <div class="section-header">
+          <h2>Appointments & Meetings (Company &harr; HR &harr; Staff)</h2>
+        </div>
+        <div class="form-box">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Meeting Type *</label>
+              <select id="appt-type">
+                <option value="HR & Staff Meeting">HR &amp; Staff (1-on-1 / Disciplinary / Appraisal)</option>
+                <option value="Company Management & HR">Company Management &amp; HR (Strategy / Policy)</option>
+                <option value="Contract Renewal Review">Contract Renewal Review</option>
+                <option value="Onboarding Interview">Onboarding / Recruitment Session</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Participant / Staff Name *</label>
+              <input type="text" id="appt-participant" placeholder="e.g. David Mwakalinga or Managing Director" />
+            </div>
+            <div class="form-group">
+              <label>Date & Time *</label>
+              <input type="text" id="appt-datetime" placeholder="e.g. Nov 16, 2026 at 10:30 AM" />
+            </div>
+            <div class="form-group">
+              <label>Agenda / Topic *</label>
+              <input type="text" id="appt-agenda" placeholder="e.g. 60-Day Contract Renewal Discussion" />
+            </div>
+            <div class="form-group">
+              <button class="btn" onclick="handleAddAppointment()">+ Book Appointment</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Meeting Type</th>
+                <th>Participant</th>
+                <th>Branch</th>
+                <th>Date & Time</th>
+                <th>Agenda</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="appointments-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. Expense Claims -->
       <div id="expenses" class="section">
         <div class="section-header">
           <h2>Expense Claims & Reimbursements</h2>
@@ -247,6 +351,7 @@
         </div>
       </div>
 
+      <!-- 6. Payroll & Payslips -->
       <div id="payroll" class="section">
         <div class="section-header">
           <h2>Monthly Payroll & Instant Payslip Generator</h2>
@@ -269,6 +374,7 @@
         </div>
       </div>
 
+      <!-- 7. Assets & Training -->
       <div id="assets" class="section">
         <div class="section-header">
           <h2>Company Asset Register & Staff Training</h2>
@@ -314,6 +420,18 @@
     </div>
   </div>
 
+  <!-- Full Staff Dossier & Contract Renewal Modal -->
+  <div id="staff-modal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <h3>Complete Employee Dossier &amp; Contract Form</h3>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('staff-modal').style.display='none'">Close</button>
+      </div>
+      <div id="staff-dossier-content"></div>
+    </div>
+  </div>
+
+  <!-- Payslip Modal -->
   <div id="payslip-modal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
     <div class="modal-box">
       <div class="modal-header">

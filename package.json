@@ -1,7 +1,7 @@
 {
   "name": "jdm-hr-portal",
-  "version": "1.0.0",
-  "description": "JDM Digital Hub HR & Payroll Portal",
+  "version": "2.0.0",
+  "description": "JDM Digital Hub HR, Appointments, Contract Monitor & Payroll Portal",
   "scripts": {
     "build": "echo 'Build successful'"
   }

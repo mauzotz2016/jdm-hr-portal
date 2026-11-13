@@ -148,6 +148,32 @@ body {
   width: 100%;
 }
 
+/* 60-Day Contract Alert Banner */
+.alert-banner {
+  background-color: var(--danger-bg);
+  border: 1px solid #fca5a5;
+  border-left: 5px solid var(--danger);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  color: #7f1d1d;
+}
+
+.alert-banner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.alert-list {
+  margin-left: 20px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -240,13 +266,24 @@ body {
 }
 
 .btn-outline {
-  background-color: transparent;
+  background-color: #ffffff;
   border: 1px solid var(--border);
   color: var(--text);
 }
 
 .btn-outline:hover {
   background-color: #f8fafc;
+}
+
+.staff-link {
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.staff-link:hover {
+  color: var(--accent-hover);
 }
 
 .form-box {
@@ -259,7 +296,7 @@ body {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
   gap: 14px;
   align-items: end;
 }
@@ -304,7 +341,7 @@ th {
   background-color: #f8fafc;
   color: var(--primary);
   font-weight: 600;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
 }
 
@@ -326,24 +363,36 @@ th {
   color: var(--warning);
 }
 
+.badge-danger {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+}
+
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.65);
   justify-content: center;
   align-items: center;
   z-index: 1000;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .modal-box {
   background: #ffffff;
-  max-width: 520px;
+  max-width: 540px;
   width: 100%;
   border-radius: 10px;
   padding: 24px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-lg {
+  max-width: 680px;
 }
 
 .modal-header {
@@ -358,6 +407,36 @@ th {
 .modal-footer {
   margin-top: 20px;
   text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dossier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.dossier-field {
+  background: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.dossier-field small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.dossier-field strong {
+  color: var(--primary);
+  font-size: 0.92rem;
 }
 
 .payslip-row {
