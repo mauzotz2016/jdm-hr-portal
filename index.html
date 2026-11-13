@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JDM Digital Hub | HR, Operations Agenda & Payroll Portal</title>
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://jsdelivr.net"></script>
   <style>
     .agenda-split { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; align-items: start; }
     .agenda-banner { background: #0f172a; color: #fff; padding: 18px 22px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #d97706; }
@@ -36,18 +35,16 @@
       <span>Workforce, Agenda & Payroll</span>
     </div>
     <ul class="nav-menu">
-      <li class="nav-item active" onclick="switchTab('dashboard', this)">Dashboard Overview</li>
-      <li class="nav-item" onclick="switchTab('weekly-agenda', this)">Weekly Operations Agenda</li>
-      <li class="nav-item" onclick="switchTab('staff', this)">Staff & E-Onboarding</li>
-      <li class="nav-item" onclick="switchTab('forms-inbox', this)">Staff Forms & Email Reply</li>
-      <li class="nav-item" onclick="switchTab('leave', this)">Leave & Off-Days</li>
-      <li class="nav-item" onclick="switchTab('appointments', this)">Appointments</li>
-      <li class="nav-item" onclick="switchTab('portals', this)">External Portals Vault</li>
-      <li class="nav-item" onclick="switchTab('payroll', this)">Payroll & Payslips</li>
+      <li class="nav-item active" data-tab="dashboard" onclick="openSection('dashboard', this)">Dashboard Overview</li>
+      <li class="nav-item" data-tab="weekly-agenda" onclick="openSection('weekly-agenda', this)">Weekly Operations Agenda</li>
+      <li class="nav-item" data-tab="staff" onclick="openSection('staff', this)">Staff & E-Onboarding</li>
+      <li class="nav-item" data-tab="forms-inbox" onclick="openSection('forms-inbox', this)">Staff Forms & Email Reply</li>
+      <li class="nav-item" data-tab="leave" onclick="openSection('leave', this)">Leave & Off-Days</li>
+      <li class="nav-item" data-tab="appointments" onclick="openSection('appointments', this)">Appointments</li>
+      <li class="nav-item" data-tab="portals" onclick="openSection('portals', this)">External Portals Vault</li>
+      <li class="nav-item" data-tab="payroll" onclick="openSection('payroll', this)">Payroll & Payslips</li>
     </ul>
-    <div class="sidebar-footer">
-      JDM Digital Hub &bull; GitHub + Appwrite
-    </div>
+    <div class="sidebar-footer">JDM Digital Hub &bull; GitHub + Appwrite</div>
   </aside>
 
   <div class="main-content">
@@ -62,45 +59,27 @@
           <option value="Makunganya">Makunganya Branch</option>
           <option value="Chikongola">Chikongola Branch</option>
         </select>
-        <span id="connection-badge" class="status-pill">Demo Mode</span>
+        <span id="connection-badge" class="status-pill">Live Portal</span>
       </div>
     </header>
 
     <div class="container">
-      <!-- 60-Day Contract Renewal Alert Banner -->
       <div id="contract-alert-banner" class="alert-banner" style="display: none;">
         <div>
           <strong>Contract Renewal Reminder (60-Day Rule):</strong>
           <span id="contract-alert-text"></span>
         </div>
-        <button class="btn btn-sm" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[2])">Review Contracts</button>
+        <button class="btn btn-sm" onclick="jumpToTab('staff')">Review Contracts</button>
       </div>
 
-      <!-- KPI Cards -->
       <div class="stats-grid">
-        <div class="stat-card">
-          <h3>Active Employees</h3>
-          <div class="value" id="kpi-staff">0</div>
-          <div class="sub">Click any staff name for full form</div>
-        </div>
-        <div class="stat-card">
-          <h3>Contracts &le; 60 Days</h3>
-          <div class="value" id="kpi-contracts" style="color: var(--danger);">0</div>
-          <div class="sub">Require renewal attention</div>
-        </div>
-        <div class="stat-card">
-          <h3>Pending Staff Forms</h3>
-          <div class="value" id="kpi-forms">0</div>
-          <div class="sub">Awaiting email feedback</div>
-        </div>
-        <div class="stat-card">
-          <h3>Saved External Portals</h3>
-          <div class="value" id="kpi-portals">0</div>
-          <div class="sub">NSSF, NHIF, TRA & Services</div>
-        </div>
+        <div class="stat-card"><h3>Active Employees</h3><div class="value" id="kpi-staff">0</div><div class="sub">Click any staff name for full form</div></div>
+        <div class="stat-card"><h3>Contracts &le; 60 Days</h3><div class="value" id="kpi-contracts" style="color: var(--danger);">0</div><div class="sub">Require renewal attention</div></div>
+        <div class="stat-card"><h3>Pending Staff Forms</h3><div class="value" id="kpi-forms">0</div><div class="sub">Awaiting email feedback</div></div>
+        <div class="stat-card"><h3>Saved External Portals</h3><div class="value" id="kpi-portals">0</div><div class="sub">NSSF, NHIF, TRA & Services</div></div>
       </div>
 
-      <!-- 1. Dashboard Overview -->
+      <!-- 1. Dashboard -->
       <div id="dashboard" class="section active">
         <div class="section-header">
           <h2>Executive HR & Operations Summary</h2>
@@ -109,39 +88,15 @@
             <button class="btn btn-outline" onclick="exportCSV()">Export Staff CSV</button>
           </div>
         </div>
-        <p class="desc-text">
-          Centralized HR & Operations command center. Manage weekly hotel operations meetings, send self-service form links to staff, monitor 60-day contract expirations, and launch NSSF/NHIF portals directly inside your workspace.
-        </p>
+        <p class="desc-text">Centralized HR & Operations command center. Manage weekly hotel operations meetings, send self-service form links to staff, monitor 60-day contract expirations, and launch NSSF/NHIF portals directly inside your workspace.</p>
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>System Capability</th>
-                <th>Description</th>
-                <th>Quick Action</th>
-              </tr>
-            </thead>
+            <thead><tr><th>System Capability</th><th>Description</th><th>Quick Action</th></tr></thead>
             <tbody>
-              <tr>
-                <td><strong>Weekly Operations Meeting Agenda</strong></td>
-                <td>Tiffany Diamond Hotels Tuesday & Friday GM/HR agenda builder + PDF</td>
-                <td><button class="btn btn-sm" onclick="switchTab('weekly-agenda', document.querySelectorAll('.nav-item')[1])">Open Agenda</button></td>
-              </tr>
-              <tr>
-                <td><strong>Staff Self-Service Form & Email Reply</strong></td>
-                <td>Send form link to staff; HR approval sends automatic status email</td>
-                <td><button class="btn btn-outline btn-sm" onclick="switchTab('forms-inbox', document.querySelectorAll('.nav-item')[3])">Open Inbox</button></td>
-              </tr>
-              <tr>
-                <td><strong>External Portals & Credential Vault</strong></td>
-                <td>Store NSSF, NHIF, TRA links & credentials and open inside portal</td>
-                <td><button class="btn btn-outline btn-sm" onclick="switchTab('portals', document.querySelectorAll('.nav-item')[6])">Open Vault</button></td>
-              </tr>
-              <tr>
-                <td><strong>Full Employee Dossier & 60-Day Alerts</strong></td>
-                <td>Click any employee row to open complete HR record & contract timer</td>
-                <td><button class="btn btn-outline btn-sm" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[2])">View Staff</button></td>
-              </tr>
+              <tr><td><strong>Weekly Operations Meeting Agenda</strong></td><td>Tiffany Diamond Hotels Tuesday & Friday GM/HR agenda builder + PDF</td><td><button class="btn btn-sm" onclick="jumpToTab('weekly-agenda')">Open Agenda</button></td></tr>
+              <tr><td><strong>Staff Self-Service Form & Email Reply</strong></td><td>Send form link to staff; HR approval sends automatic status email</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('forms-inbox')">Open Inbox</button></td></tr>
+              <tr><td><strong>External Portals & Credential Vault</strong></td><td>Store NSSF, NHIF, TRA links & credentials and open inside portal</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('portals')">Open Vault</button></td></tr>
+              <tr><td><strong>Full Employee Dossier & 60-Day Alerts</strong></td><td>Click any employee row to open complete HR record & contract timer</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('staff')">View Staff</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -179,3 +134,14 @@
               <div id="participants-container"></div>
             </div>
 
+            <div class="agenda-step">
+              <h4>3. Agenda items</h4>
+              <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">Open an item to enter the presenter's name and key points. Minutes can be changed.</p>
+              <div id="agenda-items-container"></div>
+            </div>
+
+            <div class="agenda-step">
+              <h4>4. Send to all participants</h4>
+              <div class="form-grid">
+                <div class="form-group"><label>Participants' group email</label><input type="email" id="ag-group-email" value="staff@tiffanydiamondhotels.com" /></div>
+                <div class="form-group"><label>HR access code</label><input type="password" id="ag-access-code" placeholder="Enter HR code" /></div>
