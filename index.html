@@ -4,8 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JDM Digital Hub | HR, Operations Agenda & Payroll Portal</title>
-  <link rel="stylesheet" href="styles.css" />
   <style>
+    :root {
+      --primary: #0f172a;
+      --sidebar-bg: #1e293b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--text); }
+
+    /* Sidebar */
+    .sidebar { width: 260px; background-color: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; flex-shrink: 0; }
+    .brand { padding: 22px 24px; background-color: var(--primary); border-bottom: 1px solid #334155; }
+    .brand h2 { font-size: 1.15rem; color: #fff; }
+    .brand span { display: block; font-size: 0.76rem; color: #94a3b8; margin-top: 4px; }
+    .nav-menu { list-style: none; padding: 14px 0; flex: 1; }
+    .nav-item { padding: 12px 24px; cursor: pointer; font-size: 0.9rem; color: #cbd5e1; transition: 0.2s; border-left: 4px solid transparent; }
+    .nav-item:hover { background-color: rgba(255,255,255,0.06); color: #fff; }
+    .nav-item.active { background-color: #334155; color: #fff; border-left-color: var(--accent); font-weight: 600; }
+    .sidebar-footer { padding: 16px 24px; border-top: 1px solid #334155; font-size: 0.76rem; color: #94a3b8; }
+
+    /* Main Content */
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
+    .topbar { background: var(--card); padding: 16px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .topbar-left h1 { font-size: 1.2rem; color: var(--primary); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .branch-select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem; }
+    .status-pill { padding: 5px 12px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; background: var(--success-bg); color: var(--success); }
+
+    .container { padding: 24px 28px; max-width: 1360px; width: 100%; }
+
+    /* Alert Banner */
+    .alert-banner { background: var(--danger-bg); border: 1px solid #fca5a5; color: var(--danger); padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 0.88rem; }
+
+    /* KPIs */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; margin-bottom: 24px; }
+    .stat-card { background: var(--card); padding: 18px; border-radius: 10px; border: 1px solid var(--border); }
+    .stat-card h3 { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+    .stat-card .value { font-size: 1.65rem; font-weight: 700; color: var(--primary); }
+    .stat-card .sub { font-size: 0.76rem; color: var(--muted); margin-top: 4px; }
+
+    /* Sections */
+    .section { display: none; background: var(--card); padding: 24px; border-radius: 10px; border: 1px solid var(--border); }
+    .section.active { display: block; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    .section-header h2 { font-size: 1.1rem; color: var(--primary); }
+    .desc-text { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+
+    /* Buttons & Forms */
+    .btn { background: var(--accent); color: #fff; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.84rem; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn:hover { background: var(--accent-hover); }
+    .btn-sm { padding: 5px 10px; font-size: 0.76rem; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn-success { background: var(--success); }
+    .btn-danger { background: var(--danger); }
+
+    .form-box { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: end; }
+    .form-group { display: flex; flex-direction: column; margin-bottom: 8px; }
+    .form-group label { font-size: 0.78rem; font-weight: 600; margin-bottom: 5px; color: var(--primary); }
+    .form-group input, .form-group select, .form-group textarea { padding: 8px 11px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.86rem; background: #fff; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 11px 13px; border-bottom: 1px solid var(--border); font-size: 0.86rem; }
+    th { background: #f8fafc; color: var(--primary); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
+    .clickable-row { cursor: pointer; }
+    .clickable-row:hover { background: #f1f5f9; }
+    .badge { padding: 3px 9px; border-radius: 12px; font-size: 0.74rem; font-weight: 600; display: inline-block; }
+    .badge-approved { background: var(--success-bg); color: var(--success); }
+    .badge-pending { background: var(--warning-bg); color: var(--warning); }
+    .badge-danger { background: var(--danger-bg); color: var(--danger); }
+
+    /* Weekly Agenda Split */
     .agenda-split { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; align-items: start; }
     .agenda-banner { background: #0f172a; color: #fff; padding: 18px 22px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #d97706; }
     .agenda-banner .hotel-tag { color: #fbbf24; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
@@ -19,7 +105,20 @@
     .agenda-acc-body { display: none; padding: 12px; background: #fff; border-top: 1px solid var(--border); }
     .agenda-acc-body.open { display: block; }
     .preview-paper { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: sticky; top: 20px; }
-    @media (max-width: 960px) { .agenda-split { grid-template-columns: 1fr; } }
+
+    /* Portals & Modals */
+    .portals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .portal-card { border: 1px solid var(--border); border-radius: 8px; padding: 14px; background: #fff; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+    .embedded-box { border: 2px solid var(--accent); border-radius: 10px; overflow: hidden; margin-top: 16px; }
+    .embedded-header { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    #portal-iframe { width: 100%; height: 520px; border: none; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
+    .modal-box { background: #fff; max-width: 580px; width: 100%; border-radius: 10px; padding: 22px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .payslip-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed var(--border); font-size: 0.88rem; }
+
+    @media (max-width: 960px) { .agenda-split { grid-template-columns: 1fr; } body { flex-direction: column; } .sidebar { width: 100%; } }
     @media print {
       .sidebar, .topbar, .stats-grid, .alert-banner, .no-print { display: none !important; }
       .main-content, .container, .section { padding: 0 !important; border: none !important; }
@@ -39,109 +138,3 @@
       <li class="nav-item" data-tab="weekly-agenda" onclick="openSection('weekly-agenda', this)">Weekly Operations Agenda</li>
       <li class="nav-item" data-tab="staff" onclick="openSection('staff', this)">Staff & E-Onboarding</li>
       <li class="nav-item" data-tab="forms-inbox" onclick="openSection('forms-inbox', this)">Staff Forms & Email Reply</li>
-      <li class="nav-item" data-tab="leave" onclick="openSection('leave', this)">Leave & Off-Days</li>
-      <li class="nav-item" data-tab="appointments" onclick="openSection('appointments', this)">Appointments</li>
-      <li class="nav-item" data-tab="portals" onclick="openSection('portals', this)">External Portals Vault</li>
-      <li class="nav-item" data-tab="payroll" onclick="openSection('payroll', this)">Payroll & Payslips</li>
-    </ul>
-    <div class="sidebar-footer">JDM Digital Hub &bull; GitHub + Appwrite</div>
-  </aside>
-
-  <div class="main-content">
-    <header class="topbar">
-      <div class="topbar-left">
-        <h1 id="page-title">Dashboard Overview</h1>
-      </div>
-      <div class="topbar-right">
-        <select id="branch-filter" onchange="renderAll()" class="branch-select">
-          <option value="ALL">All Branches</option>
-          <option value="Indira Gandhi">Indira Gandhi Branch</option>
-          <option value="Makunganya">Makunganya Branch</option>
-          <option value="Chikongola">Chikongola Branch</option>
-        </select>
-        <span id="connection-badge" class="status-pill">Live Portal</span>
-      </div>
-    </header>
-
-    <div class="container">
-      <div id="contract-alert-banner" class="alert-banner" style="display: none;">
-        <div>
-          <strong>Contract Renewal Reminder (60-Day Rule):</strong>
-          <span id="contract-alert-text"></span>
-        </div>
-        <button class="btn btn-sm" onclick="jumpToTab('staff')">Review Contracts</button>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card"><h3>Active Employees</h3><div class="value" id="kpi-staff">0</div><div class="sub">Click any staff name for full form</div></div>
-        <div class="stat-card"><h3>Contracts &le; 60 Days</h3><div class="value" id="kpi-contracts" style="color: var(--danger);">0</div><div class="sub">Require renewal attention</div></div>
-        <div class="stat-card"><h3>Pending Staff Forms</h3><div class="value" id="kpi-forms">0</div><div class="sub">Awaiting email feedback</div></div>
-        <div class="stat-card"><h3>Saved External Portals</h3><div class="value" id="kpi-portals">0</div><div class="sub">NSSF, NHIF, TRA & Services</div></div>
-      </div>
-
-      <!-- 1. Dashboard -->
-      <div id="dashboard" class="section active">
-        <div class="section-header">
-          <h2>Executive HR & Operations Summary</h2>
-          <div style="display:flex; gap:10px;">
-            <button class="btn" onclick="copyStaffFormLink()">Copy Staff Form Link</button>
-            <button class="btn btn-outline" onclick="exportCSV()">Export Staff CSV</button>
-          </div>
-        </div>
-        <p class="desc-text">Centralized HR & Operations command center. Manage weekly hotel operations meetings, send self-service form links to staff, monitor 60-day contract expirations, and launch NSSF/NHIF portals directly inside your workspace.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>System Capability</th><th>Description</th><th>Quick Action</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Weekly Operations Meeting Agenda</strong></td><td>Tiffany Diamond Hotels Tuesday & Friday GM/HR agenda builder + PDF</td><td><button class="btn btn-sm" onclick="jumpToTab('weekly-agenda')">Open Agenda</button></td></tr>
-              <tr><td><strong>Staff Self-Service Form & Email Reply</strong></td><td>Send form link to staff; HR approval sends automatic status email</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('forms-inbox')">Open Inbox</button></td></tr>
-              <tr><td><strong>External Portals & Credential Vault</strong></td><td>Store NSSF, NHIF, TRA links & credentials and open inside portal</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('portals')">Open Vault</button></td></tr>
-              <tr><td><strong>Full Employee Dossier & 60-Day Alerts</strong></td><td>Click any employee row to open complete HR record & contract timer</td><td><button class="btn btn-outline btn-sm" onclick="jumpToTab('staff')">View Staff</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 2. Weekly Operations Meeting Agenda -->
-      <div id="weekly-agenda" class="section">
-        <div class="agenda-banner no-print">
-          <div class="hotel-tag">Tiffany Diamond Hotels Limited - The Top and Best in Tanzania</div>
-          <h3>Weekly Operations Meeting</h3>
-          <p>Every Tuesday and Friday &middot; Chairperson: General Manager &middot; Secretary: HR Manager</p>
-        </div>
-
-        <div class="agenda-split">
-          <div class="no-print">
-            <div class="agenda-step">
-              <h4>1. Meeting details</h4>
-              <div class="form-grid">
-                <div class="form-group"><label>Date</label><input type="date" id="ag-date" onchange="updateAgendaPreview()" /></div>
-                <div class="form-group"><label>Start time</label><input type="time" id="ag-time" value="09:00" onchange="updateAgendaPreview()" /></div>
-                <div class="form-group"><label>Venue</label><input type="text" id="ag-venue" value="Boardroom - Indira Gandhi Branch" oninput="updateAgendaPreview()" /></div>
-              </div>
-              <div class="form-group" style="margin-top:10px;">
-                <label>Recap of the previous meeting (GM)</label>
-                <textarea id="ag-recap" rows="2" placeholder="Summary of previous meeting action items..." oninput="updateAgendaPreview()" style="padding:8px; border:1px solid var(--border); border-radius:6px; width:100%;"></textarea>
-              </div>
-            </div>
-
-            <div class="agenda-step">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <h4 style="border:none; margin:0; padding:0;">2. Meeting participants</h4>
-                <button class="btn btn-outline btn-sm" onclick="addParticipantRow()">+ Add participant</button>
-              </div>
-              <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">Untick Present for someone who did not attend. Rows without a name are left out of the report.</p>
-              <div id="participants-container"></div>
-            </div>
-
-            <div class="agenda-step">
-              <h4>3. Agenda items</h4>
-              <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">Open an item to enter the presenter's name and key points. Minutes can be changed.</p>
-              <div id="agenda-items-container"></div>
-            </div>
-
-            <div class="agenda-step">
-              <h4>4. Send to all participants</h4>
-              <div class="form-grid">
-                <div class="form-group"><label>Participants' group email</label><input type="email" id="ag-group-email" value="staff@tiffanydiamondhotels.com" /></div>
-                <div class="form-group"><label>HR access code</label><input type="password" id="ag-access-code" placeholder="Enter HR code" /></div>
