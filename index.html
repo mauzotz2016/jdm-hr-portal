@@ -3,395 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JDM Digital Hub | HR & Payroll Portal</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2"></script>
+  <title>JDM Digital Hub | HR & Operations Portal</title>
+  <style>
+    :root { --primary:#0f172a; --sidebar:#1e293b; --accent:#2563eb; --bg:#f1f5f9; --card:#fff; --text:#334155; --muted:#64748b; --border:#e2e8f0; --success:#16a34a; --success-bg:#dcfce7; --warning:#d97706; --warning-bg:#fef3c7; --danger:#dc2626; --danger-bg:#fee2e2; }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI',system-ui,sans-serif; }
+    body { display:flex; min-height:100vh; background:var(--bg); color:var(--text); }
+    .sidebar { width:250px; background:var(--sidebar); color:#fff; display:flex; flex-direction:column; flex-shrink:0; }
+    .brand { padding:20px; background:var(--primary); border-bottom:1px solid #334155; }
+    .brand h2 { font-size:1.15rem; }
+    .brand span { font-size:0.75rem; color:#94a3b8; }
+    .nav-menu { list-style:none; padding:12px 0; flex:1; }
+    .nav-item { padding:11px 20px; cursor:pointer; font-size:0.88rem; color:#cbd5e1; border-left:4px solid transparent; }
+    .nav-item:hover { background:rgba(255,255,255,0.06); color:#fff; }
+    .nav-item.active { background:#334155; color:#fff; border-left-color:var(--accent); font-weight:600; }
+    .sidebar-footer { padding:14px 20px; border-top:1px solid #334155; font-size:0.75rem; color:#94a3b8; }
+    .main-content { flex:1; display:flex; flex-direction:column; overflow-x:hidden; }
+    .topbar { background:var(--card); padding:15px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+    .topbar h1 { font-size:1.15rem; color:var(--primary); }
+    .branch-select { padding:6px 10px; border-radius:6px; border:1px solid var(--border); font-size:0.84rem; }
+    .status-pill { padding:4px 11px; border-radius:20px; font-size:0.75rem; font-weight:600; background:var(--success-bg); color:var(--success); }
+    .container { padding:22px 24px; max-width:1360px; width:100%; }
+    .alert-banner { background:var(--danger-bg); border:1px solid #fca5a5; color:var(--danger); padding:11px 16px; border-radius:8px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:0.86rem; }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:22px; }
+    .stat-card { background:var(--card); padding:16px; border-radius:10px; border:1px solid var(--border); }
+    .stat-card h3 { font-size:0.75rem; color:var(--muted); text-transform:uppercase; margin-bottom:5px; }
+    .stat-card .value { font-size:1.55rem; font-weight:700; color:var(--primary); }
+    .stat-card .sub { font-size:0.74rem; color:var(--muted); margin-top:3px; }
+    .section { display:none; background:var(--card); padding:22px; border-radius:10px; border:1px solid var(--border); }
+    .section.active { display:block; }
+    .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:10px; }
+    .section-header h2 { font-size:1.05rem; color:var(--primary); }
+    .btn { background:var(--accent); color:#fff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:0.82rem; font-weight:600; text-decoration:none; display:inline-block; }
+    .btn-sm { padding:5px 9px; font-size:0.75rem; }
+    .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+    .btn-success { background:var(--success); }
+    .btn-danger { background:var(--danger); }
+    .form-box { background:#f8fafc; padding:14px; border-radius:8px; border:1px solid var(--border); margin-bottom:18px; }
+    .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; align-items:end; }
+    .form-group { display:flex; flex-direction:column; margin-bottom:6px; }
+    .form-group label { font-size:0.76rem; font-weight:600; margin-bottom:4px; color:var(--primary); }
+    .form-group input, .form-group select, .form-group textarea { padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.84rem; background:#fff; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); font-size:0.84rem; }
+    th { background:#f8fafc; color:var(--primary); font-size:0.76rem; text-transform:uppercase; }
+    .clickable-row { cursor:pointer; }
+    .clickable-row:hover { background:#f1f5f9; }
+    .badge { padding:3px 8px; border-radius:12px; font-size:0.72rem; font-weight:600; display:inline-block; }
+    .badge-approved { background:var(--success-bg); color:var(--success); }
+    .badge-pending { background:var(--warning-bg); color:var(--warning); }
+    .badge-danger { background:var(--danger-bg); color:var(--danger); }
+    .agenda-split { display:grid; grid-template-columns:1.15fr 0.85fr; gap:20px; align-items:start; }
+    .agenda-banner { background:#0f172a; color:#fff; padding:16px 20px; border-radius:8px; margin-bottom:18px; border-left:5px solid #d97706; }
+    .agenda-banner .hotel-tag { color:#fbbf24; font-size:0.75rem; font-weight:700; text-transform:uppercase; }
+    .agenda-step { border:1px solid var(--border); border-radius:8px; padding:14px; margin-bottom:14px; background:#fff; }
+    .agenda-step h4 { font-size:0.9rem; color:var(--primary); margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:5px; }
+    .participant-row { display:grid; grid-template-columns:1.2fr 1.2fr auto auto; gap:6px; align-items:center; margin-bottom:6px; }
+    .agenda-accordion { border:1px solid var(--border); border-radius:6px; margin-bottom:6px; }
+    .agenda-acc-head { background:#f8fafc; padding:9px 12px; cursor:pointer; display:flex; justify-content:space-between; font-size:0.82rem; font-weight:600; color:var(--primary); }
+    .agenda-acc-body { display:none; padding:10px; border-top:1px solid var(--border); }
+    .agenda-acc-body.open { display:block; }
+    .preview-paper { background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:18px; position:sticky; top:16px; }
+    .portals-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-bottom:16px; }
+    .portal-card { border:1px solid var(--border); border-radius:8px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; gap:8px; }
+    .embedded-box { border:2px solid var(--accent); border-radius:8px; overflow:hidden; margin-top:14px; }
+    .embedded-header { background:#f8fafc; padding:9px 12px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+    #portal-iframe { width:100%; height:480px; border:none; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); justify-content:center; align-items:center; z-index:1000; padding:16px; }
+    .modal-box { background:#fff; max-width:560px; width:100%; border-radius:10px; padding:20px; max-height:90vh; overflow-y:auto; }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px; }
+    .payslip-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--border); font-size:0.86rem; }
+    @media (max-width:960px) { .agenda-split { grid-template-columns:1fr; } body { flex-direction:column; } .sidebar { width:100%; } }
+    @media print { .sidebar,.topbar,.stats-grid,.alert-banner,.no-print { display:none!important; } .main-content,.container,.section { padding:0!important; border:none!important; } }
+  </style>
 </head>
 <body>
 
   <aside class="sidebar">
-    <div class="brand">
-      <h2>JDM HR Portal</h2>
-      <span>Workforce, Portals & Payroll</span>
-    </div>
+    <div class="brand"><h2>JDM HR Portal</h2><span>Workforce, Agenda & Payroll</span></div>
     <ul class="nav-menu">
-      <li class="nav-item active" onclick="switchTab('dashboard', this)">Dashboard Overview</li>
-      <li class="nav-item" onclick="switchTab('staff', this)">Staff & E-Onboarding</li>
-      <li class="nav-item" onclick="switchTab('forms-inbox', this)">Staff Forms & Email Reply</li>
-      <li class="nav-item" onclick="switchTab('leave', this)">Leave & Off-Days</li>
-      <li class="nav-item" onclick="switchTab('appointments', this)">Appointments</li>
-      <li class="nav-item" onclick="switchTab('portals', this)">External Portals Vault</li>
-      <li class="nav-item" onclick="switchTab('payroll', this)">Payroll & Payslips</li>
+      <li class="nav-item active" data-tab="dashboard" onclick="openSection('dashboard', this)">Dashboard Overview</li>
+      <li class="nav-item" data-tab="weekly-agenda" onclick="openSection('weekly-agenda', this)">Weekly Operations Agenda</li>
+      <li class="nav-item" data-tab="staff" onclick="openSection('staff', this)">Staff & E-Onboarding</li>
+      <li class="nav-item" data-tab="forms-inbox" onclick="openSection('forms-inbox', this)">Staff Forms & Email Reply</li>
+      <li class="nav-item" data-tab="leave" onclick="openSection('leave', this)">Leave & Off-Days</li>
+      <li class="nav-item" data-tab="appointments" onclick="openSection('appointments', this)">Appointments</li>
+      <li class="nav-item" data-tab="portals" onclick="openSection('portals', this)">External Portals Vault</li>
+      <li class="nav-item" data-tab="payroll" onclick="openSection('payroll', this)">Payroll & Payslips</li>
     </ul>
-    <div class="sidebar-footer">
-      JDM Digital Hub &bull; GitHub + Appwrite
-    </div>
+    <div class="sidebar-footer">JDM Digital Hub &bull; GitHub + Appwrite</div>
   </aside>
 
   <div class="main-content">
     <header class="topbar">
-      <div class="topbar-left">
-        <h1 id="page-title">Dashboard Overview</h1>
-      </div>
-      <div class="topbar-right">
+      <h1 id="page-title">Dashboard Overview</h1>
+      <div style="display:flex; align-items:center; gap:10px;">
         <select id="branch-filter" onchange="renderAll()" class="branch-select">
           <option value="ALL">All Branches</option>
           <option value="Indira Gandhi">Indira Gandhi Branch</option>
           <option value="Makunganya">Makunganya Branch</option>
           <option value="Chikongola">Chikongola Branch</option>
         </select>
-        <span id="connection-badge" class="status-pill">Demo Mode</span>
+        <span class="status-pill">Live Portal</span>
       </div>
     </header>
 
     <div class="container">
-      <div id="contract-alert-banner" class="alert-banner" style="display: none;">
-        <div>
-          <strong>Contract Renewal Reminder (60-Day Rule):</strong>
-          <span id="contract-alert-text"></span>
-        </div>
-        <button class="btn btn-sm" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[1])">Review Contracts</button>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h3>Active Employees</h3>
-          <div class="value" id="kpi-staff">0</div>
-          <div class="sub">Click any staff name for full form</div>
-        </div>
-        <div class="stat-card">
-          <h3>Contracts &le; 60 Days</h3>
-          <div class="value" id="kpi-contracts" style="color: var(--danger);">0</div>
-          <div class="sub">Require renewal attention</div>
-        </div>
-        <div class="stat-card">
-          <h3>Pending Staff Forms</h3>
-          <div class="value" id="kpi-forms">0</div>
-          <div class="sub">Awaiting email feedback</div>
-        </div>
-        <div class="stat-card">
-          <h3>Saved External Portals</h3>
-          <div class="value" id="kpi-portals">0</div>
-          <div class="sub">NSSF, NHIF, TRA & Services</div>
-        </div>
-      </div>
-
-      <div id="dashboard" class="section active">
-        <div class="section-header">
-          <h2>Executive HR & Operations Summary</h2>
-          <div style="display:flex; gap:10px;">
-            <button class="btn" onclick="copyStaffFormLink()">Copy Staff Form Link</button>
-            <button class="btn btn-outline" onclick="exportCSV()">Export Staff CSV</button>
-          </div>
-        </div>
-        <p class="desc-text">
-          Centralized HR command center. Send the self-service form link to staff, approve requests with instant email feedback, monitor 60-day contract expirations, and launch NSSF/NHIF portals directly inside your workspace.
-        </p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>System Capability</th>
-                <th>Description</th>
-                <th>Quick Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Staff Self-Service Form & Email Reply</strong></td>
-                <td>Send form link to staff; HR approval sends automatic status email</td>
-                <td><button class="btn btn-outline btn-sm" onclick="switchTab('forms-inbox', document.querySelectorAll('.nav-item')[2])">Open Inbox</button></td>
-              </tr>
-              <tr>
-                <td><strong>External Portals & Credential Vault</strong></td>
-                <td>Store NSSF, NHIF, TRA links & credentials and open inside portal</td>
-                <td><button class="btn btn-outline btn-sm" onclick="switchTab('portals', document.querySelectorAll('.nav-item')[5])">Open Vault</button></td>
-              </tr>
-              <tr>
-                <td><strong>Full Employee Dossier & 60-Day Alerts</strong></td>
-                <td>Click any employee row to open complete HR record & contract timer</td>
-                <td><button class="btn btn-outline btn-sm" onclick="switchTab('staff', document.querySelectorAll('.nav-item')[1])">View Staff</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="staff" class="section">
-        <div class="section-header">
-          <h2>Staff Directory & Contract Monitor (Click Row for Full Form)</h2>
-        </div>
-        <div class="form-box">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Full Name</label>
-              <input type="text" id="emp-name" placeholder="e.g. Neema Mwakalinga" />
-            </div>
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="emp-email" placeholder="neema@company.co.tz" />
-            </div>
-            <div class="form-group">
-              <label>Job Title</label>
-              <input type="text" id="emp-role" placeholder="Front Desk Supervisor" />
-            </div>
-            <div class="form-group">
-              <label>Branch</label>
-              <select id="emp-branch">
-                <option value="Indira Gandhi">Indira Gandhi</option>
-                <option value="Makunganya">Makunganya</option>
-                <option value="Chikongola">Chikongola</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Contract End Date</label>
-              <input type="date" id="emp-contract-end" />
-            </div>
-            <div class="form-group">
-              <label>Basic Salary (TZS)</label>
-              <input type="number" id="emp-salary" placeholder="850000" />
-            </div>
-            <div class="form-group">
-              <button class="btn" onclick="handleAddEmployee()">+ Onboard Staff</button>
-            </div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Employee Name</th>
-                <th>Role & Branch</th>
-                <th>Contract Expiry</th>
-                <th>Days Left</th>
-                <th>Dossier</th>
-              </tr>
-            </thead>
-            <tbody id="staff-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="forms-inbox" class="section">
-        <div class="section-header">
-          <h2>Staff Submitted Forms & Automated Email Response</h2>
-          <div style="display:flex; gap:10px;">
-            <a href="staff-form.html" target="_blank" class="btn btn-outline btn-sm">Preview Staff Form</a>
-            <button class="btn btn-sm" onclick="copyStaffFormLink()">Copy Link to Send Staff</button>
-          </div>
-        </div>
-        <p class="desc-text">
-          When you click <strong>Approve</strong>, <strong>Hold</strong>, or <strong>Reject</strong>, the portal updates the request and dispatches an automated email response directly to the employee's email address.
-        </p>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Staff Name & Email</th>
-                <th>Request Type</th>
-                <th>Details / Dates</th>
-                <th>Status</th>
-                <th>HR Decision & Auto-Email</th>
-              </tr>
-            </thead>
-            <tbody id="forms-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="leave" class="section">
-        <div class="section-header">
-          <h2>Leave & Weekly Off-Day Tracker</h2>
-        </div>
-        <div class="form-box">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Employee Name</label>
-              <input type="text" id="leave-emp" placeholder="Staff Name" />
-            </div>
-            <div class="form-group">
-              <label>Category</label>
-              <select id="leave-type">
-                <option value="Weekly Off-Day">Weekly Off-Day</option>
-                <option value="Compensatory Off-Day">Compensatory Off-Day</option>
-                <option value="Annual Leave">Annual Leave</option>
-                <option value="Sick Leave">Sick Leave</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Dates</label>
-              <input type="text" id="leave-dates" placeholder="e.g. Nov 18, 2026" />
-            </div>
-            <div class="form-group">
-              <button class="btn" onclick="handleAddLeave()">+ Log Leave / Off-Day</button>
-            </div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Branch</th>
-                <th>Category</th>
-                <th>Dates</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="leave-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="appointments" class="section">
-        <div class="section-header">
-          <h2>Official Appointments (Management &bull; HR &bull; Staff)</h2>
-        </div>
-        <div class="form-box">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Meeting Type</label>
-              <select id="appt-type">
-                <option value="Company Management & HR">Company Management & HR</option>
-                <option value="HR & Staff">HR & Staff</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Participant / Staff Name</label>
-              <input type="text" id="appt-person" placeholder="e.g. Managing Director / Amina" />
-            </div>
-            <div class="form-group">
-              <label>Subject / Agenda</label>
-              <input type="text" id="appt-subject" placeholder="Contract Renewal Review" />
-            </div>
-            <div class="form-group">
-              <label>Date & Time</label>
-              <input type="datetime-local" id="appt-datetime" />
-            </div>
-            <div class="form-group">
-              <button class="btn" onclick="handleAddAppointment()">+ Schedule Appointment</button>
-            </div>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Participant</th>
-                <th>Subject</th>
-                <th>Date & Time</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="appt-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="portals" class="section">
-        <div class="section-header">
-          <h2>External Portals & Credential Vault (NSSF, NHIF, TRA & More)</h2>
-        </div>
-        <p class="desc-text">
-          Save your frequently used portals and login credentials. Click <strong>Open Inside Portal</strong> to work directly inside the embedded window below, or copy credentials with one click.
-        </p>
-        <div class="form-box">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Portal Name</label>
-              <input type="text" id="portal-name" placeholder="e.g. NSSF Employer Portal" />
-            </div>
-            <div class="form-group">
-              <label>Portal URL (with https://)</label>
-              <input type="url" id="portal-url" placeholder="https://portal.nssf.go.tz" />
-            </div>
-            <div class="form-group">
-              <label>Username / Employer ID</label>
-              <input type="text" id="portal-user" placeholder="admin@jdmhub.co.tz" />
-            </div>
-            <div class="form-group">
-              <label>Password / PIN</label>
-              <input type="password" id="portal-pass" placeholder="Enter portal password" />
-            </div>
-            <div class="form-group">
-              <button class="btn" onclick="handleAddPortal()">+ Save Portal</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="portals-grid" class="portals-grid"></div>
-
-        <div id="embedded-workspace" class="embedded-box" style="display: none;">
-          <div class="embedded-header">
-            <div>
-              <strong id="active-portal-title">Portal Workspace</strong>
-              <span id="active-portal-creds" style="margin-left: 12px; font-size: 0.82rem; color: var(--muted);"></span>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-outline btn-sm" id="copy-user-btn">Copy Username</button>
-              <button class="btn btn-outline btn-sm" id="copy-pass-btn">Copy Password</button>
-              <a id="external-fallback-link" href="#" target="_blank" class="btn btn-sm">Open Full Tab</a>
-              <button class="btn btn-outline btn-sm" onclick="closeEmbeddedPortal()">Close Window</button>
-            </div>
-          </div>
-          <div class="iframe-notice">
-            Note: If a government portal (such as NSSF or NHIF) restricts frame embedding for security, click <strong>Open Full Tab</strong> above while keeping your credentials copied.
-          </div>
-          <iframe id="portal-iframe" src="" title="External Portal Workspace"></iframe>
-        </div>
-      </div>
-
-      <div id="payroll" class="section">
-        <div class="section-header">
-          <h2>Monthly Payroll & Instant Payslip Generator</h2>
-          <button class="btn" onclick="alert('Batch payroll file generated and ready for bank upload.')">Run Monthly Payroll Batch</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Branch</th>
-                <th>Gross Pay (TZS)</th>
-                <th>NSSF (10%)</th>
-                <th>Net Pay (Est.)</th>
-                <th>Payslip</th>
-              </tr>
-            </thead>
-            <tbody id="payroll-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div id="employee-modal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-    <div class="modal-box" style="max-width: 640px;">
-      <div class="modal-header">
-        <h3>Complete Employee Record & Contract Form</h3>
-        <button class="btn btn-outline btn-sm" onclick="document.getElementById('employee-modal').style.display='none'">Close</button>
-      </div>
-      <div id="employee-dossier-content"></div>
-    </div>
-  </div>
-
-  <div id="payslip-modal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3>Official Employee Payslip</h3>
-        <button class="btn btn-outline btn-sm" onclick="document.getElementById('payslip-modal').style.display='none'">Close</button>
-      </div>
-      <div id="payslip-content"></div>
-      <div class="modal-footer">
-        <button class="btn" onclick="window.print()">Print / Save PDF</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
+      <div id="contract-alert-banner" class="alert-banner" style="display:none;">
+        <div><strong>Contract Renewal Reminder (60-Day Rule):</strong> <span id="contract-alert-text"></span></div>
+        <button class="btn btn-sm" onclick="jumpToTab('staff')">Review Contracts</button>
