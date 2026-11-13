@@ -121,21 +121,21 @@ let state = {
       name: 'NSSF Employer Portal',
       url: 'https://portal.nssf.go.tz',
       username: 'hr@jdmhub.co.tz',
-      password: 'NSSF_Password_2026'
+      password: 'Password123'
     },
     {
       $id: 'p2',
       name: 'NHIF Employer Self-Service',
       url: 'https://eservices.nhif.or.tz',
       username: 'jdm_employer_01',
-      password: 'NHIF_Password_2026'
+      password: 'Password123'
     },
     {
       $id: 'p3',
       name: 'TRA Taxpayer Portal',
       url: 'https://taxpayerportal.tra.go.tz',
       username: '104-882-910',
-      password: 'TRA_Password_2026'
+      password: 'Password123'
     }
   ]
 };
@@ -262,20 +262,23 @@ function renderAll() {
     </tr>
   `).join('');
 
-  document.getElementById('portals-grid').innerHTML = state.portals.map(p => `
-    <div class="portal-card">
-      <div>
-        <h4>${p.name}</h4>
-        <p>${p.url}</p>
-        <p style="margin-top:6px; color:var(--primary);">User: <strong>${p.username}</strong></p>
+  const portalsGrid = document.getElementById('portals-grid');
+  if (portalsGrid) {
+    portalsGrid.innerHTML = state.portals.map(p => `
+      <div class="portal-card">
+        <div>
+          <h4>${p.name}</h4>
+          <p>${p.url}</p>
+          <p style="margin-top:6px; color:var(--primary);">User: <strong>${p.username}</strong></p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="launchEmbeddedPortal('${p.$id}')">Open Inside Portal</button>
+          <button class="btn btn-outline btn-sm" onclick="copyText('${p.username}', 'Username')">Copy User</button>
+          <button class="btn btn-outline btn-sm" onclick="copyText('${p.password}', 'Password')">Copy Pass</button>
+        </div>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn btn-sm" onclick="launchEmbeddedPortal('${p.$id}')">Open Inside Portal</button>
-        <button class="btn btn-outline btn-sm" onclick="copyText('${p.username}', 'Username')">Copy User</button>
-        <button class="btn btn-outline btn-sm" onclick="copyText('${p.password}', 'Password')">Copy Pass</button>
-      </div>
-    </div>
-  `).join('');
+    `).join('');
+  }
 
   document.getElementById('payroll-tbody').innerHTML = filteredStaff.map(emp => {
     const gross = Number(emp.salary || 0);
@@ -362,20 +365,14 @@ async function respondToStaffForm(formId, decision) {
 
   const subject = encodeURIComponent(`HR Request Update: ${formItem.type} [${decision.toUpperCase()}]`);
   const body = encodeURIComponent(
-    `Hello ${formItem.name},
-
-Your HR request for "${formItem.type}" (${formItem.dates}) has been reviewed by Human Resources.
-
-Current Status: ${decision.toUpperCase()}
-
-Best regards,
-HR Department - JDM Digital Hub`
+    `Hello ${formItem.name},\n\nYour HR request for "${formItem.type}" (${formItem.dates}) has been reviewed by Human Resources.\n\nCurrent Status: ${decision.toUpperCase()}\n\nBest regards,\nHR Department - JDM Digital Hub`
   );
   window.open(`mailto:${formItem.email}?subject=${subject}&body=${body}`, '_blank');
 }
 
 function copyStaffFormLink() {
-  const url = window.location.href.replace('index.html', '') + 'staff-form.html';
+  const base = window.location.href.split('?')[0].replace(/index\.html$/, '');
+  const url = (base.endsWith('/') ? base : base + '/') + 'staff-form.html';
   copyText(url, 'Staff Self-Service Form Link');
 }
 
@@ -524,8 +521,7 @@ function openPayslip(name, role, branch, gross, nssf, net) {
 function exportCSV() {
   const rows = [['Name', 'Email', 'Role', 'Branch', 'Contract End', 'Salary', 'Status']];
   state.employees.forEach(e => rows.push([e.name, e.email || '', e.role, e.branch, e.contractEnd || '', e.salary, e.status]));
-  const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.join(',')).join('
-');
+  const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.join(',')).join('\n');
   const link = document.createElement('a');
   link.setAttribute('href', encodeURI(csvContent));
   link.setAttribute('download', 'JDM_HR_Staff_Report.csv');
