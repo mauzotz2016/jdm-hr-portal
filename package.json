@@ -1,8 +1,0 @@
-{
-  "name": "jdm-hr-portal",
-  "version": "2.0.0",
-  "description": "JDM Digital Hub HR Portal with Staff Forms & External Portals Vault",
-  "scripts": {
-    "build": "echo 'Static build successful'"
-  }
-}
