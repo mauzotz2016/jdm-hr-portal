@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Request Form | JDM HR</title>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2"></script>
+  <style>
+    :root { --primary:#0f172a; --accent:#2563eb; --accent-hover:#1d4ed8; --bg:#f1f5f9; --text:#334155; --muted:#64748b; --border:#e2e8f0; --success:#16a34a; --success-bg:#dcfce7; --danger:#dc2626; --danger-bg:#fee2e2; }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background:var(--bg); color:var(--text); min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:24px 16px; }
+    .card { background:#fff; width:100%; max-width:560px; border:1px solid var(--border); border-radius:12px; padding:26px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+    .head { background:var(--primary); color:#fff; padding:16px 20px; border-radius:8px; margin-bottom:20px; border-left:5px solid #d97706; }
+    .head h1 { font-size:1.15rem; }
+    .head p { font-size:0.8rem; color:#cbd5e1; margin-top:4px; }
+    .group { display:flex; flex-direction:column; margin-bottom:14px; }
+    label { font-size:0.82rem; font-weight:600; color:var(--primary); margin-bottom:6px; }
+    input, select, textarea { padding:10px 12px; border:1px solid var(--border); border-radius:6px; font-size:0.92rem; background:#fff; }
+    input:focus, select:focus, textarea:focus { outline:2px solid var(--accent); border-color:transparent; }
+    button { width:100%; background:var(--accent); color:#fff; border:none; padding:12px; border-radius:6px; font-size:0.95rem; font-weight:600; cursor:pointer; }
+    button:hover { background:var(--accent-hover); }
+    button:disabled { opacity:0.6; cursor:not-allowed; }
+    .msg { padding:12px; border-radius:8px; font-size:0.88rem; margin-bottom:14px; display:none; }
+    .msg.ok { display:block; background:var(--success-bg); color:var(--success); }
+    .msg.err { display:block; background:var(--danger-bg); color:var(--danger); }
+    .hp { position:absolute; left:-9999px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="head">
+      <h1>Staff Request Form</h1>
+      <p>Leave, off-day and other HR requests. HR will reply to your email.</p>
+    </div>
+
+    <div id="msg" class="msg"></div>
+
+    <div id="form-area">
+      <div class="group"><label>Full Name *</label><input type="text" id="sf-name" autocomplete="name" /></div>
+      <div class="group"><label>Email Address *</label><input type="email" id="sf-email" autocomplete="email" /></div>
+      <div class="group"><label>Branch *</label>
+        <select id="sf-branch">
+          <option value="Indira Gandhi">Indira Gandhi</option>
+          <option value="Makunganya">Makunganya</option>
+          <option value="Chikongola">Chikongola</option>
+        </select>
+      </div>
+      <div class="group"><label>Request Type *</label>
+        <select id="sf-type">
+          <option>Weekly Off-Day</option>
+          <option>Compensatory Off-Day</option>
+          <option>Annual Leave</option>
+          <option>Sick Leave</option>
+          <option>Salary / Payslip Query</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="group"><label>Dates *</label><input type="text" id="sf-dates" placeholder="e.g. Nov 19, 2026 or Dec 01 - Dec 05, 2026" /></div>
+      <div class="group"><label>Notes / Reason</label><textarea id="sf-notes" rows="3"></textarea></div>
+      <input type="text" id="sf-trap" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <button id="sf-submit" onclick="submitStaffForm()">Submit Request</button>
+    </div>
+  </div>
+
+  <script src="appwrite-config.js"></script>
+  <script>
+    const msgBox = document.getElementById('msg');
+    function showMsg(text, ok) { msgBox.className = 'msg ' + (ok ? 'ok' : 'err'); msgBox.innerText = text; }
+
+    async function submitStaffForm() {
+      if (document.getElementById('sf-trap').value) return; // bot
+      const payload = {
+        name: document.getElementById('sf-name').value.trim(),
+        email: document.getElementById('sf-email').value.trim(),
+        branch: document.getElementById('sf-branch').value,
+        type: document.getElementById('sf-type').value,
+        dates: document.getElementById('sf-dates').value.trim(),
+        notes: document.getElementById('sf-notes').value.trim(),
+        status: 'Pending'
+      };
+      if (!payload.name || !payload.email || !payload.dates) return showMsg('Please fill in Name, Email and Dates.', false);
+      if (!/^\S+@\S+\.\S+$/.test(payload.email)) return showMsg('Enter a valid email address.', false);
+
+      const btn = document.getElementById('sf-submit');
+      btn.disabled = true;
+      try {
+        if (isLiveAppwrite) {
+          await databases.createDocument(APPWRITE_CONFIG.databaseId, APPWRITE_CONFIG.collections.staffForms, Appwrite.ID.unique(), payload);
+        } else {
+          // Demo mode: hifadhi localStorage (browser hii tu)
+          const list = JSON.parse(localStorage.getItem('jdm_staff_forms') || 'null') || state.staffForms;
+          list.unshift({ $id: 'sf_' + Date.now(), ...payload });
+          localStorage.setItem('jdm_staff_forms', JSON.stringify(list));
+        }
+        document.getElementById('form-area').style.display = 'none';
+        showMsg('Request submitted successfully. HR will respond to your email.', true);
+      } catch (err) {
+        console.error(err);
+        showMsg('Submission failed. Please try again or contact HR.', false);
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
