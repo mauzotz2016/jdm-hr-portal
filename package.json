@@ -1,0 +1,9 @@
+{
+  "name": "jdm-hr-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JDM HR Portal - static site",
+  "scripts": {
+    "build": "echo static site - nothing to build"
+  }
+}
